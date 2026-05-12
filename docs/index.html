@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
 <title>Manq'a Grants — Becas y Fondos</title>
+<meta name="theme-color" content="#E8632B"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
@@ -18,6 +19,7 @@
                     "manqa-navy": "#2D3664",
                     "manqa-lime": "#84cc16",
                     "manqa-cyan": "#06b6d4",
+                    "manqa-warm": "#FFF8F3",
                     "surface": "#FAFAFA",
                     "surface-card": "#FFFFFF",
                     "surface-hover": "#F5F5F5",
@@ -36,24 +38,25 @@
     }
 </script>
 <style>
-    .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     [x-cloak] { display: none !important; }
     body { font-family: 'Montserrat', system-ui, sans-serif; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-surface text-text-primary antialiased min-h-screen flex flex-col relative overflow-x-hidden">
 
 <!-- Auth Gate -->
-<div id="auth-gate" style="position:fixed;inset:0;z-index:9999;background:#FAFAFA;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',system-ui,sans-serif;">
-  <div style="text-align:center;max-width:340px;padding:24px;">
-    <img alt="Manq'a Logo" src="manqa-logo.jpeg" style="width:180px;height:auto;object-fit:contain;margin:0 auto 16px auto;display:block;"/>
-    <div style="font-size:11px;text-transform:uppercase;letter-spacing:4px;color:#E8632B;margin-bottom:12px;font-weight:700;">Acceso Restringido</div>
-    <h2 style="font-size:20px;color:#2D3664;margin-bottom:24px;font-weight:700;">Becas y Fondos</h2>
-    <input id="auth-input" type="password" placeholder="Contraseña" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid #E5E7EB;background:#FFFFFF;color:#2D3664;font-size:14px;outline:none;margin-bottom:12px;font-family:'Montserrat',system-ui,sans-serif;" onkeydown="if(event.key==='Enter')checkAuth()">
-    <button onclick="checkAuth()" style="width:100%;padding:12px;border-radius:10px;border:none;background:#E8632B;color:#FFFFFF;font-size:14px;font-weight:600;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;">Entrar</button>
+<div id="auth-gate" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg, #FFF8F3 0%, #FAFAFA 50%, #F0F4FF 100%);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',system-ui,sans-serif;">
+  <div style="text-align:center;max-width:340px;padding:32px 24px;">
+    <img alt="Manq'a Logo" src="manqa-logo.jpeg" style="width:160px;height:auto;object-fit:contain;margin:0 auto 20px auto;display:block;"/>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:5px;color:#E8632B;margin-bottom:8px;font-weight:700;">Acceso Restringido</div>
+    <h2 style="font-size:22px;color:#2D3664;margin-bottom:4px;font-weight:700;">Becas y Fondos</h2>
+    <p style="font-size:12px;color:#9CA3AF;margin-bottom:28px;">Manq'a Sostenibles & Wayna</p>
+    <input id="auth-input" type="password" placeholder="Contraseña" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid #E5E7EB;background:#FFFFFF;color:#2D3664;font-size:14px;outline:none;margin-bottom:12px;font-family:'Montserrat',system-ui,sans-serif;transition:border-color 0.2s;" onfocus="this.style.borderColor='#E8632B'" onblur="this.style.borderColor='#E5E7EB'" onkeydown="if(event.key==='Enter')checkAuth()">
+    <button onclick="checkAuth()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg, #E8632B, #D4357A);color:#FFFFFF;font-size:14px;font-weight:600;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Entrar</button>
     <p id="auth-error" style="color:#EF4444;font-size:12px;margin-top:12px;display:none;">Contraseña incorrecta</p>
   </div>
 </div>
@@ -62,56 +65,58 @@
 
 <div x-data="dashboard()" x-init="init()" x-cloak>
 
-<!-- Navigation -->
-<div class="sm:hidden flex flex-col items-center py-5 border-b border-border">
-    <img alt="Manq'a Logo" class="h-20 w-auto object-contain mb-1" src="manqa-logo.jpeg"/>
-    <span class="text-lg text-manqa-navy font-bold">Becas y Fondos</span>
-</div>
-<nav class="bg-white border-b border-border hidden sm:flex justify-between items-center max-w-[1100px] mx-auto px-6 py-4 w-full z-50">
-    <div class="flex items-center gap-3">
-        <img alt="Manq'a Logo" class="h-16 w-auto object-contain" src="manqa-logo.jpeg"/>
-        <div>
-            <span class="text-xl text-manqa-navy font-bold block leading-tight">Becas y Fondos</span>
-            <span class="text-xs text-text-secondary">Oportunidades para Manq'a Sostenibles</span>
+<!-- Mobile Header -->
+<header class="sm:hidden bg-white border-b border-border sticky top-0 z-50">
+    <div class="flex items-center gap-3 px-4 py-3">
+        <img alt="Manq'a Logo" class="h-10 w-auto object-contain" src="manqa-logo.jpeg"/>
+        <div class="flex-1 min-w-0">
+            <span class="text-base text-manqa-navy font-bold block leading-tight">Becas y Fondos</span>
+            <span class="text-[10px] text-text-muted" x-text="data.length + ' oportunidades'"></span>
         </div>
     </div>
-    <div class="flex items-center gap-4">
+    <div class="px-4 pb-3">
         <div class="relative">
-            <input x-model="search" @input="page = 1" class="bg-surface border border-border rounded-full py-1.5 px-4 text-sm text-text-primary focus:outline-none focus:border-manqa-orange placeholder-text-muted w-48" placeholder="Buscar..." type="text"/>
-            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-[18px]">search</span>
+            <input x-model="search" @input="page = 1" class="w-full bg-surface border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm text-text-primary focus:outline-none focus:border-manqa-orange placeholder-text-muted" placeholder="Buscar convocatorias..."/>
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-[18px]">search</span>
+        </div>
+    </div>
+</header>
+
+<!-- Desktop Header -->
+<nav class="bg-white border-b border-border hidden sm:block sticky top-0 z-50">
+    <div class="flex justify-between items-center max-w-[1100px] mx-auto px-6 py-4 w-full">
+        <div class="flex items-center gap-3">
+            <img alt="Manq'a Logo" class="h-14 w-auto object-contain" src="manqa-logo.jpeg"/>
+            <div>
+                <span class="text-lg text-manqa-navy font-bold block leading-tight">Becas y Fondos</span>
+                <span class="text-xs text-text-secondary">Manq'a Sostenibles & Wayna</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <p class="text-xs text-text-muted hidden lg:block">
+                <span x-text="lastScan"></span>
+            </p>
+            <div class="relative">
+                <input x-model="search" @input="page = 1" class="bg-surface border border-border rounded-xl py-2 pl-9 pr-4 text-sm text-text-primary focus:outline-none focus:border-manqa-orange placeholder-text-muted w-52" placeholder="Buscar..."/>
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-[16px]">search</span>
+            </div>
         </div>
     </div>
 </nav>
 
-<main class="flex-grow max-w-[1100px] w-full mx-auto px-3 sm:px-6 py-6 sm:py-8 flex flex-col gap-6 sm:gap-10 z-10">
-
-    <!-- Scan info -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <p class="text-sm text-text-secondary">
-            Último escaneo: <span class="font-medium" x-text="lastScan"></span> &bull;
-            <span x-text="data.length"></span> oportunidades
-            <template x-if="newCount > 0">
-                <span class="ml-2 bg-manqa-green/20 text-manqa-green text-xs font-semibold px-2 py-0.5 rounded-full" x-text="newCount + ' nuevas'"></span>
-            </template>
-        </p>
-        <div class="sm:hidden w-full">
-            <input x-model="search" @input="page = 1" class="w-full bg-white border border-border rounded-lg py-2 px-4 text-sm text-text-primary focus:outline-none focus:border-manqa-orange placeholder-text-muted" placeholder="Buscar..." type="text"/>
-        </div>
-    </div>
-    <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-manqa-orange/40 to-transparent -mt-4"></div>
+<main class="flex-grow max-w-[1100px] w-full mx-auto px-4 sm:px-6 py-5 sm:py-8 flex flex-col gap-5 sm:gap-8 z-10">
 
     <!-- Deadline Urgency Banner -->
     <template x-if="urgentGrants.length > 0">
-        <div class="bg-manqa-orange/10 border border-manqa-orange/30 rounded-xl p-4 flex items-start gap-3">
-            <span class="material-symbols-outlined text-manqa-orange text-[24px] mt-0.5">warning</span>
-            <div>
+        <div class="bg-manqa-orange/8 border border-manqa-orange/20 rounded-2xl p-4 flex items-start gap-3">
+            <span class="material-symbols-outlined text-manqa-orange text-[22px] mt-0.5 shrink-0">schedule</span>
+            <div class="min-w-0">
                 <p class="text-sm font-semibold text-manqa-orange" x-text="urgentGrants.length + ' oportunidad' + (urgentGrants.length > 1 ? 'es cierran' : ' cierra') + ' esta semana'"></p>
-                <div class="flex flex-col gap-1 mt-2">
-                    <template x-for="item in urgentGrants" :key="item.url">
-                        <a :href="item.url" target="_blank" class="text-sm text-text-primary hover:text-manqa-orange no-underline flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[14px] text-manqa-orange">schedule</span>
-                            <span class="font-medium" x-text="item.deadline"></span>
-                            <span class="text-text-secondary" x-text="'— ' + item.title.substring(0, 60) + (item.title.length > 60 ? '...' : '')"></span>
+                <div class="flex flex-col gap-1.5 mt-2">
+                    <template x-for="item in urgentGrants.slice(0, 3)" :key="item.url">
+                        <a :href="item.url" target="_blank" class="text-xs text-text-primary hover:text-manqa-orange no-underline flex items-center gap-2 truncate">
+                            <span class="font-semibold text-manqa-orange shrink-0" x-text="item.deadline"></span>
+                            <span class="text-text-secondary truncate" x-text="item.title"></span>
                         </a>
                     </template>
                 </div>
@@ -119,211 +124,215 @@
         </div>
     </template>
 
-    <!-- Category Stats -->
-    <section class="grid grid-cols-4 md:grid-cols-8 gap-2 sm:gap-3">
+    <!-- Category Chips (scrollable on mobile) -->
+    <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
+        <button @click="activeCategory = ''; page = 1"
+                class="shrink-0 text-xs px-3.5 py-2 rounded-xl font-semibold transition-all duration-200"
+                :class="activeCategory === '' ? 'bg-manqa-navy text-white shadow-sm' : 'bg-white border border-border text-text-secondary hover:border-manqa-navy'">
+            Todas <span class="ml-1 opacity-70" x-text="data.length"></span>
+        </button>
         <template x-for="s in statCards" :key="s.cat">
-            <div class="p-3 sm:p-4 rounded-lg relative overflow-hidden group cursor-pointer transition-all duration-200"
-                 :class="activeCategory === s.cat ? 'ring-2 scale-[1.03] bg-white shadow-md' : 'bg-white border border-border hover:shadow-sm'"
-                 :style="activeCategory === s.cat ? 'ring-color:' + s.hex : ''"
-                 @click="toggleCategory(s.cat)">
-                <div class="absolute top-0 left-0 w-full h-[3px]" :style="'background: ' + s.hex"></div>
-                <div class="flex flex-col gap-1 relative">
-                    <span class="text-2xl sm:text-3xl font-bold" :style="'color: ' + s.hex" x-text="catStats[s.cat] || 0"></span>
-                    <span class="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold text-text-secondary leading-tight" x-text="s.label"></span>
-                </div>
-            </div>
+            <button @click="toggleCategory(s.cat)"
+                    class="shrink-0 text-xs px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center gap-1.5"
+                    :class="activeCategory === s.cat ? 'text-white shadow-sm' : 'bg-white border border-border text-text-secondary'"
+                    :style="activeCategory === s.cat ? 'background:' + s.hex : ''">
+                <span class="w-2 h-2 rounded-full shrink-0" :style="activeCategory !== s.cat ? 'background:' + s.hex : 'background:rgba(255,255,255,0.5)'"></span>
+                <span x-text="s.label"></span>
+                <span class="opacity-70" x-text="catStats[s.cat] || 0"></span>
+            </button>
         </template>
-    </section>
+    </div>
 
     <!-- Priority Grants -->
-    <section class="flex flex-col gap-5" x-show="!activeCategory && !search">
-        <div class="flex items-center gap-3">
-            <span class="text-2xl text-manqa-orange font-bold opacity-80">01</span>
-            <h2 class="text-lg font-semibold text-manqa-navy">Prioridad</h2>
-            <span class="text-text-secondary text-sm ml-2">Mejores coincidencias</span>
+    <section class="flex flex-col gap-4" x-show="!activeCategory && !search">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-manqa-orange text-[20px]">star</span>
+            <h2 class="text-base font-bold text-manqa-navy">Prioridad</h2>
+            <span class="text-text-muted text-xs">Mejores coincidencias</span>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <template x-for="item in topPicks" :key="item.url">
-                <a :href="item.url" target="_blank" rel="noopener"
-                   class="bg-white border border-border rounded-xl p-4 sm:p-5 flex flex-col gap-2 sm:gap-3 relative overflow-hidden hover:shadow-md transition-all no-underline border-l-[4px]"
-                   :style="'border-left-color: ' + catHex(item.category)">
-                    <div class="flex items-center gap-2 justify-end">
-                        <span x-show="item.is_new" class="bg-manqa-green/20 text-manqa-green text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">nueva</span>
-                        <span class="px-2 py-1 rounded text-xs font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] px-2 py-0.5 rounded uppercase font-bold"
-                              :style="'background: ' + catHex(item.category) + '1a; color: ' + catHex(item.category)"
-                              x-text="catLabel(item.category)"></span>
-                        <span x-show="item.status === 'expired' || item.status === 'closed'" class="text-[10px] px-1.5 py-0.5 rounded bg-error/10 text-error uppercase font-bold" x-text="item.status"></span>
-                        <span class="text-text-muted text-xs" x-text="item.source"></span>
-                    </div>
-                    <h3 class="text-[15px] font-semibold text-manqa-navy leading-tight" x-text="item.title"></h3>
-                    <p class="text-sm text-text-secondary line-clamp-2" x-text="item.summary || item.snippet"></p>
-                    <!-- Why it fits Manq'a -->
-                    <p x-show="item.match_reason" class="text-xs text-manqa-navy/70 bg-surface rounded-lg px-3 py-2 leading-relaxed" x-text="item.match_reason"></p>
-                    <!-- Requirements -->
-                    <div x-show="item.requirements && item.requirements.length > 0" class="text-xs text-text-secondary">
-                        <span class="font-semibold text-manqa-navy">Requisitos:</span>
-                        <span x-text="(item.requirements || []).slice(0, 3).join(' · ')"></span>
-                    </div>
-                    <!-- Action tip -->
-                    <p x-show="item.action_tip" class="text-xs text-manqa-orange/80 italic" x-text="item.action_tip"></p>
-                    <!-- Not a real funding opportunity warning -->
-                    <p x-show="item.is_funding_opportunity === false" class="text-[10px] text-error bg-error/5 rounded px-2 py-1 font-medium">No es convocatoria directa — artículo informativo</p>
-                    <div class="flex flex-wrap gap-2 mt-auto pt-2 items-center">
-                        <template x-for="dim in dimDots(item)" :key="dim.label">
-                            <span class="text-[9px] px-1.5 py-0.5 rounded-full border" :style="'border-color:' + dim.color + ';color:' + dim.color" x-text="dim.label"></span>
-                        </template>
-                        <span x-show="item.opportunity_type && item.opportunity_type !== 'grant'" class="text-[9px] px-1.5 py-0.5 rounded-full bg-manqa-purple/10 text-manqa-purple border border-manqa-purple/30 uppercase" x-text="item.opportunity_type"></span>
-                        <span x-show="item.deadline" class="text-xs ml-auto flex items-center gap-1" :class="isExpiringSoon(item) ? 'text-manqa-orange font-semibold' : 'text-text-muted'">
-                            <span class="material-symbols-outlined text-[14px]">schedule</span>
-                            <span x-text="item.deadline"></span>
-                        </span>
-                    </div>
-                </a>
-            </template>
+        <div class="bg-manqa-warm rounded-2xl p-3 sm:p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <template x-for="item in topPicks" :key="item.url">
+                    <a :href="item.url" target="_blank" rel="noopener"
+                       class="bg-white rounded-xl p-4 flex flex-col gap-2 relative overflow-hidden hover:shadow-md transition-all no-underline border-l-[3px]"
+                       :style="'border-left-color: ' + catHex(item.category)">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-[10px] px-2 py-0.5 rounded-lg uppercase font-bold"
+                                  :style="'background: ' + catHex(item.category) + '15; color: ' + catHex(item.category)"
+                                  x-text="catLabel(item.category)"></span>
+                            <span x-show="item.opportunity_type && item.opportunity_type !== 'grant'" class="text-[10px] px-2 py-0.5 rounded-lg bg-manqa-purple/10 text-manqa-purple uppercase font-bold" x-text="item.opportunity_type"></span>
+                            <span class="text-text-muted text-[11px] ml-auto" x-text="item.source"></span>
+                            <span class="px-1.5 py-0.5 rounded text-[11px] font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
+                        </div>
+                        <h3 class="text-[14px] font-semibold text-manqa-navy leading-snug" x-text="item.title"></h3>
+                        <p class="text-xs text-text-secondary line-clamp-2 leading-relaxed" x-text="item.summary || item.snippet"></p>
+                        <p x-show="item.match_reason" class="text-[11px] text-manqa-navy/60 leading-relaxed line-clamp-2" x-text="item.match_reason"></p>
+                        <div x-show="item.requirements && item.requirements.length > 0" class="text-[11px] text-text-muted">
+                            <span class="font-semibold text-text-secondary">Requisitos:</span>
+                            <span x-text="(item.requirements || []).slice(0, 2).join(' · ')"></span>
+                        </div>
+                        <p x-show="item.action_tip" class="text-[11px] text-manqa-orange italic" x-text="item.action_tip"></p>
+                        <p x-show="item.is_funding_opportunity === false" class="text-[10px] text-error/80 font-medium">Artículo informativo, no convocatoria</p>
+                        <div class="flex items-center gap-2 mt-auto pt-1">
+                            <template x-for="dim in dimDots(item)" :key="dim.label">
+                                <span class="text-[8px] px-1.5 py-0.5 rounded-full border font-semibold" :style="'border-color:' + dim.color + '40;color:' + dim.color" x-text="dim.label"></span>
+                            </template>
+                            <span x-show="item.deadline" class="text-[11px] ml-auto flex items-center gap-1" :class="isExpiringSoon(item) ? 'text-manqa-orange font-semibold' : 'text-text-muted'">
+                                <span class="material-symbols-outlined text-[13px]">schedule</span>
+                                <span x-text="item.deadline"></span>
+                            </span>
+                        </div>
+                    </a>
+                </template>
+            </div>
         </div>
     </section>
 
     <!-- Browse All -->
-    <section class="flex flex-col gap-5">
-        <div class="flex items-center gap-3">
-            <span class="text-2xl text-manqa-orange font-bold opacity-80" x-text="(!activeCategory && !search) ? '02' : ''"></span>
-            <h2 class="text-lg font-semibold text-manqa-navy">Todas las Oportunidades</h2>
-            <span class="text-text-secondary text-sm ml-2" x-show="activeCategory">
-                Filtro: <span class="text-manqa-orange font-medium" x-text="catLabel(activeCategory)"></span>
-                <button @click="activeCategory = ''; page = 1" class="text-text-muted hover:text-manqa-orange ml-1">&times;</button>
-            </span>
-            <span class="text-text-secondary text-sm ml-auto" x-text="filtered.length + ' resultados'"></span>
+    <section class="flex flex-col gap-4">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-manqa-navy/50 text-[20px]">list</span>
+            <h2 class="text-base font-bold text-manqa-navy">Todas las Oportunidades</h2>
+            <span class="text-text-muted text-xs ml-auto" x-text="filtered.length + ' resultados'"></span>
         </div>
 
-        <!-- Status filter -->
-        <div class="flex flex-wrap gap-2 mb-1">
-            <button @click="statusFilter = ''; page = 1"
-                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
-                    :class="statusFilter === '' ? 'bg-manqa-green text-white border-manqa-green shadow-sm' : 'border-border text-text-secondary hover:border-manqa-green'">
-                Activas
-            </button>
-            <button @click="statusFilter = 'all'; page = 1"
-                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
-                    :class="statusFilter === 'all' ? 'bg-manqa-navy text-white border-manqa-navy shadow-sm' : 'border-border text-text-secondary hover:border-manqa-navy'">
-                Todas
-            </button>
-            <button @click="statusFilter = 'expired'; page = 1"
-                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
-                    :class="statusFilter === 'expired' ? 'bg-error text-white border-error shadow-sm' : 'border-border text-text-secondary hover:border-error'">
-                Expiradas
-            </button>
-            <button @click="statusFilter = 'new'; page = 1"
-                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
-                    :class="statusFilter === 'new' ? 'bg-manqa-green text-white border-manqa-green shadow-sm' : 'border-border text-text-secondary hover:border-manqa-green'">
-                Nuevas
-            </button>
+        <!-- Filters row -->
+        <div class="flex items-center gap-2 flex-wrap">
+            <!-- Status chips -->
+            <div class="flex gap-1.5">
+                <button @click="statusFilter = ''; page = 1"
+                        class="text-[11px] px-2.5 py-1.5 rounded-lg font-medium transition-all"
+                        :class="statusFilter === '' ? 'bg-manqa-green text-white' : 'bg-white border border-border text-text-muted hover:border-manqa-green'">
+                    Activas
+                </button>
+                <button @click="statusFilter = 'all'; page = 1"
+                        class="text-[11px] px-2.5 py-1.5 rounded-lg font-medium transition-all"
+                        :class="statusFilter === 'all' ? 'bg-manqa-navy text-white' : 'bg-white border border-border text-text-muted hover:border-manqa-navy'">
+                    Todas
+                </button>
+                <button @click="statusFilter = 'new'; page = 1"
+                        class="text-[11px] px-2.5 py-1.5 rounded-lg font-medium transition-all"
+                        :class="statusFilter === 'new' ? 'bg-manqa-green text-white' : 'bg-white border border-border text-text-muted hover:border-manqa-green'">
+                    Nuevas
+                </button>
+            </div>
+            <!-- Source dropdown -->
+            <div class="relative ml-auto" x-data="{ open: false }">
+                <button @click="open = !open" class="text-[11px] px-3 py-1.5 rounded-lg font-medium bg-white border border-border text-text-secondary hover:border-manqa-orange flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">filter_list</span>
+                    Fuentes
+                    <template x-if="activeSources.length > 0">
+                        <span class="bg-manqa-orange text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center font-bold" x-text="activeSources.length"></span>
+                    </template>
+                </button>
+                <div x-show="open" @click.outside="open = false" x-transition class="absolute right-0 top-full mt-1 bg-white border border-border rounded-xl shadow-lg p-2 z-50 max-h-64 overflow-y-auto w-56">
+                    <button @click="activeSources = []; page = 1" class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-surface font-medium" :class="activeSources.length === 0 ? 'text-manqa-orange' : 'text-text-secondary'">
+                        Todas las fuentes
+                    </button>
+                    <template x-for="src in sources" :key="src">
+                        <button @click="activeSources.includes(src) ? activeSources = activeSources.filter(s => s !== src) : activeSources = [...activeSources, src]; page = 1"
+                                class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-surface flex items-center gap-2"
+                                :class="activeSources.includes(src) ? 'text-manqa-orange font-medium' : 'text-text-secondary'">
+                            <span class="material-symbols-outlined text-[14px]" x-text="activeSources.includes(src) ? 'check_box' : 'check_box_outline_blank'"></span>
+                            <span x-text="src"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
         </div>
 
-        <!-- Source filter -->
-        <div class="flex flex-wrap gap-2">
-            <button @click="activeSources = []; page = 1"
-                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
-                    :class="activeSources.length === 0 ? 'bg-manqa-orange text-white border-manqa-orange shadow-sm' : 'border-border text-text-secondary hover:border-manqa-orange'">
-                Todas las Fuentes
-            </button>
-            <template x-for="src in sources" :key="src">
-                <button @click="activeSources.includes(src) ? activeSources = activeSources.filter(s => s !== src) : activeSources = [...activeSources, src]; page = 1"
-                        class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
-                        :class="activeSources.includes(src) ? 'bg-manqa-orange text-white border-manqa-orange shadow-sm' : 'border-border text-text-secondary hover:border-manqa-orange'"
-                        x-text="src"></button>
-            </template>
-        </div>
-
-        <!-- Cards (mobile) / Table (desktop) -->
         <!-- Mobile cards -->
-        <div class="sm:hidden flex flex-col gap-3">
+        <div class="sm:hidden flex flex-col gap-2.5">
             <template x-for="item in paginated" :key="item.url">
                 <a :href="item.url" target="_blank" rel="noopener"
-                   class="bg-white border border-border rounded-xl p-4 flex flex-col gap-2 no-underline hover:shadow-sm transition-all border-l-[4px]"
+                   class="bg-white rounded-xl p-3.5 flex flex-col gap-1.5 no-underline active:bg-surface-hover transition-colors border-l-[3px]"
                    :style="'border-left-color: ' + catHex(item.category)">
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] px-2 py-0.5 rounded uppercase font-bold"
-                              :style="'background: ' + catHex(item.category) + '1a; color: ' + catHex(item.category)"
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-md uppercase font-bold"
+                              :style="'background: ' + catHex(item.category) + '15; color: ' + catHex(item.category)"
                               x-text="catLabel(item.category)"></span>
-                        <span class="text-xs font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
-                        <span x-show="item.is_new" class="bg-manqa-green/20 text-manqa-green text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">nueva</span>
-                        <span x-show="item.status === 'expired' || item.status === 'closed'" class="text-[10px] px-1.5 py-0.5 rounded bg-error/10 text-error uppercase font-bold" x-text="item.status"></span>
-                    </div>
-                    <h3 class="text-sm font-semibold text-manqa-navy leading-tight" x-text="item.title"></h3>
-                    <p class="text-xs text-text-secondary line-clamp-2" x-text="item.summary || item.snippet"></p>
-                    <div class="flex items-center justify-between text-xs text-text-muted">
-                        <span x-text="item.source"></span>
-                        <span x-show="item.deadline" class="flex items-center gap-1" :class="isExpiringSoon(item) ? 'text-manqa-orange font-semibold' : ''">
-                            <span class="material-symbols-outlined text-[12px]">schedule</span>
+                        <span class="text-[11px] font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
+                        <span x-show="item.is_new" class="bg-manqa-green/15 text-manqa-green text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase">nueva</span>
+                        <span x-show="item.deadline" class="text-[10px] ml-auto flex items-center gap-0.5" :class="isExpiringSoon(item) ? 'text-manqa-orange font-semibold' : 'text-text-muted'">
+                            <span class="material-symbols-outlined text-[11px]">schedule</span>
                             <span x-text="item.deadline"></span>
                         </span>
                     </div>
+                    <h3 class="text-[13px] font-semibold text-manqa-navy leading-snug" x-text="item.title"></h3>
+                    <p class="text-[11px] text-text-secondary line-clamp-2 leading-relaxed" x-text="item.summary || item.snippet"></p>
+                    <span class="text-[10px] text-text-muted" x-text="item.source"></span>
                 </a>
             </template>
+            <!-- Empty state -->
+            <div x-show="paginated.length === 0" class="text-center py-12">
+                <span class="material-symbols-outlined text-text-muted text-[48px] mb-2 block">search_off</span>
+                <p class="text-sm text-text-muted">No se encontraron resultados</p>
+            </div>
         </div>
 
         <!-- Desktop table -->
-        <div class="hidden sm:block overflow-x-auto bg-white border border-border rounded-xl">
+        <div class="hidden sm:block bg-white border border-border rounded-2xl overflow-hidden">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="border-b border-border">
-                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted">Categoría</th>
-                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted cursor-pointer hover:text-manqa-orange" @click="sortBy('match_score')">
+                    <tr class="border-b border-border bg-surface/50">
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted w-28">Categoría</th>
+                        <th class="px-3 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted cursor-pointer hover:text-manqa-orange w-16" @click="sortBy('match_score')">
                             Score <span class="text-[10px]" x-text="sortField === 'match_score' ? (sortDir === -1 ? '▼' : '▲') : ''"></span>
                         </th>
                         <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted">Oportunidad</th>
-                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted">Fuente</th>
-                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted hidden lg:table-cell cursor-pointer hover:text-manqa-orange" @click="sortBy('date_found')">Fecha</th>
-                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted hidden lg:table-cell">Límite</th>
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted w-36">Fuente</th>
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted hidden xl:table-cell w-24 cursor-pointer hover:text-manqa-orange" @click="sortBy('date_found')">Fecha</th>
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted hidden lg:table-cell w-24">Límite</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-light">
                     <template x-for="item in paginated" :key="item.url">
-                        <tr class="group transition-all duration-200 hover:bg-surface-hover border-l-4 cursor-pointer"
-                            :class="item.is_new ? 'border-l-manqa-green bg-manqa-green/[0.03]' : 'border-l-transparent hover:border-l-manqa-orange'"
+                        <tr class="group transition-colors duration-150 hover:bg-surface-hover cursor-pointer border-l-[3px]"
+                            :class="item.is_new ? 'border-l-manqa-green bg-manqa-green/[0.02]' : 'border-l-transparent'"
                             @click="window.open(item.url, '_blank')">
                             <td class="px-4 py-3">
-                                <span class="text-[10px] px-2 py-0.5 rounded uppercase font-bold whitespace-nowrap"
-                                      :style="'background: ' + catHex(item.category) + '1a; color: ' + catHex(item.category)"
+                                <span class="text-[10px] px-2 py-0.5 rounded-md uppercase font-bold whitespace-nowrap"
+                                      :style="'background: ' + catHex(item.category) + '15; color: ' + catHex(item.category)"
                                       x-text="catLabel(item.category)"></span>
                             </td>
-                            <td class="px-4 py-3">
-                                <span class="text-sm font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
+                            <td class="px-3 py-3">
+                                <span class="text-xs font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-text-primary font-medium text-sm leading-tight" x-text="item.title"></span>
-                                    <span x-show="item.is_new" class="shrink-0 bg-manqa-green/20 text-manqa-green text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">nueva</span>
-                                    <span x-show="item.status === 'expired' || item.status === 'closed'" class="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-error/10 text-error uppercase font-bold" x-text="item.status"></span>
+                                    <span class="text-text-primary font-medium text-sm leading-snug" x-text="item.title"></span>
+                                    <span x-show="item.is_new" class="shrink-0 bg-manqa-green/15 text-manqa-green text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase">nueva</span>
                                 </div>
-                                <div x-show="item.summary" class="text-text-secondary text-xs mt-0.5 line-clamp-1 max-w-md" x-text="item.summary"></div>
+                                <div x-show="item.summary" class="text-text-muted text-xs mt-0.5 line-clamp-1 max-w-lg" x-text="item.summary"></div>
                             </td>
-                            <td class="px-4 py-3 text-text-secondary text-sm whitespace-nowrap" x-text="item.source"></td>
-                            <td class="px-4 py-3 text-text-muted text-sm hidden lg:table-cell whitespace-nowrap" x-text="item.date_found"></td>
-                            <td class="px-4 py-3 text-sm hidden lg:table-cell whitespace-nowrap" :class="item.deadline ? 'text-manqa-pink font-medium' : 'text-text-muted/30'" x-text="item.deadline || '-'"></td>
+                            <td class="px-4 py-3 text-text-muted text-xs whitespace-nowrap" x-text="item.source"></td>
+                            <td class="px-4 py-3 text-text-muted text-xs hidden xl:table-cell whitespace-nowrap" x-text="item.date_found ? item.date_found.split(' ')[0] : ''"></td>
+                            <td class="px-4 py-3 text-xs hidden lg:table-cell whitespace-nowrap" :class="item.deadline ? 'text-manqa-pink font-medium' : 'text-text-muted/20'" x-text="item.deadline || '—'"></td>
                         </tr>
                     </template>
                 </tbody>
             </table>
+            <!-- Empty state -->
+            <div x-show="paginated.length === 0" class="text-center py-12">
+                <span class="material-symbols-outlined text-text-muted text-[48px] mb-2 block">search_off</span>
+                <p class="text-sm text-text-muted">No se encontraron resultados</p>
+            </div>
         </div>
 
         <!-- Pagination -->
         <div class="flex justify-between items-center" x-show="totalPages > 1">
-            <button @click="page = Math.max(1, page - 1)"
+            <button @click="page = Math.max(1, page - 1); window.scrollTo({top: 0, behavior: 'smooth'})"
                     :disabled="page === 1"
-                    class="px-4 py-2 text-sm border border-border rounded-lg text-text-secondary hover:border-manqa-orange hover:text-manqa-orange disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                <span class="material-symbols-outlined text-[16px] align-middle">chevron_left</span> Anterior
+                    class="px-4 py-2 text-xs font-medium border border-border rounded-xl text-text-secondary hover:border-manqa-orange hover:text-manqa-orange disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">chevron_left</span> Anterior
             </button>
-            <span class="text-sm text-text-secondary">
-                Página <span x-text="page"></span> de <span x-text="totalPages"></span>
+            <span class="text-xs text-text-muted">
+                <span x-text="page"></span> / <span x-text="totalPages"></span>
             </span>
-            <button @click="page = Math.min(totalPages, page + 1)"
+            <button @click="page = Math.min(totalPages, page + 1); window.scrollTo({top: 0, behavior: 'smooth'})"
                     :disabled="page === totalPages"
-                    class="px-4 py-2 text-sm border border-border rounded-lg text-text-secondary hover:border-manqa-orange hover:text-manqa-orange disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                Siguiente <span class="material-symbols-outlined text-[16px] align-middle">chevron_right</span>
+                    class="px-4 py-2 text-xs font-medium border border-border rounded-xl text-text-secondary hover:border-manqa-orange hover:text-manqa-orange disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1">
+                Siguiente <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             </button>
         </div>
     </section>
@@ -331,11 +340,13 @@
 </main>
 
 <!-- Footer -->
-<footer class="bg-white border-t border-border py-6 w-full mt-auto">
-    <div class="max-w-[1100px] mx-auto px-3 sm:px-6 flex flex-col md:flex-row justify-between items-center opacity-60 gap-4">
-        <span class="text-text-secondary text-sm">Manq'a Grants &bull; Última actualización: <span x-text="lastScan || 'cargando...'"></span></span>
-        <div class="flex gap-6">
-            <a class="text-text-secondary text-sm hover:text-manqa-orange transition-colors" href="https://manqa.org.bo" target="_blank">manqa.org.bo</a>
+<footer class="bg-white border-t border-border py-5 w-full mt-auto">
+    <div class="max-w-[1100px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <span class="text-text-muted text-xs" x-text="'Última actualización: ' + (lastScan || '—')"></span>
+        <div class="flex gap-4 items-center">
+            <a class="text-text-muted text-xs hover:text-manqa-orange transition-colors" href="https://manqa.org.bo" target="_blank">manqa.org.bo</a>
+            <span class="text-text-muted/30 text-xs">|</span>
+            <span class="text-text-muted/50 text-[10px]">Manq'a & Wayna</span>
         </div>
     </div>
 </footer>
@@ -391,11 +402,11 @@ function dashboard() {
                         const parts = raw.replace(' BOT', '').split(' ');
                         const [y, mo, da] = parts[0].split('-').map(Number);
                         const [h24, mi] = (parts[1] || '0:00').split(':').map(Number);
-                        const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                        const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
                         const h = h24 % 12 || 12;
                         const min = String(mi).padStart(2, '0');
                         const ampm = h24 >= 12 ? 'PM' : 'AM';
-                        this.lastScan = `${da} de ${meses[mo - 1]} ${y}, ${h}:${min} ${ampm}`;
+                        this.lastScan = `${da} ${meses[mo - 1]} ${y}, ${h}:${min} ${ampm}`;
                     }
                 } else {
                     this.data = json;
@@ -483,72 +494,48 @@ function dashboard() {
             return items;
         },
 
-        get totalPages() {
-            return Math.max(1, Math.ceil(this.filtered.length / this.perPage));
-        },
+        get totalPages() { return Math.max(1, Math.ceil(this.filtered.length / this.perPage)); },
+        get paginated() { return this.filtered.slice((this.page - 1) * this.perPage, this.page * this.perPage); },
 
-        get paginated() {
-            const start = (this.page - 1) * this.perPage;
-            return this.filtered.slice(start, start + this.perPage);
-        },
-
-        toggleCategory(cat) {
-            this.activeCategory = this.activeCategory === cat ? '' : cat;
-            this.page = 1;
-        },
+        toggleCategory(cat) { this.activeCategory = this.activeCategory === cat ? '' : cat; this.page = 1; },
 
         sortBy(field) {
-            if (this.sortField === field) {
-                this.sortDir *= -1;
-            } else {
-                this.sortField = field;
-                this.sortDir = -1;
-            }
+            if (this.sortField === field) { this.sortDir *= -1; }
+            else { this.sortField = field; this.sortDir = -1; }
             this.page = 1;
         },
 
-        catHex(cat) {
-            return (this._catMap[cat] || this._catMap.general).hex;
-        },
-
-        catLabel(cat) {
-            return (this._catMap[cat] || this._catMap.general).label;
-        },
+        catHex(cat) { return (this._catMap[cat] || this._catMap.general).hex; },
+        catLabel(cat) { return (this._catMap[cat] || this._catMap.general).label; },
 
         scoreClass(item) {
             const s = item.match_score || item.relevance || 0;
-            if (s >= 70) return 'text-manqa-green bg-manqa-green/10 border border-manqa-green/30 rounded px-1.5';
-            if (s >= 40) return 'text-manqa-orange bg-manqa-orange/10 border border-manqa-orange/30 rounded px-1.5';
-            return 'text-text-muted bg-surface border border-border rounded px-1.5';
+            if (s >= 70) return 'text-manqa-green bg-manqa-green/10 rounded px-1.5';
+            if (s >= 40) return 'text-manqa-orange bg-manqa-orange/10 rounded px-1.5';
+            return 'text-text-muted bg-surface rounded px-1.5';
         },
 
         isExpiringSoon(item) {
             if (!item.deadline) return false;
-            try {
-                const dl = new Date(item.deadline);
-                const days = (dl - new Date()) / (1000 * 60 * 60 * 24);
-                return days > 0 && days <= 7;
-            } catch { return false; }
+            try { const dl = new Date(item.deadline); const days = (dl - new Date()) / 864e5; return days > 0 && days <= 7; }
+            catch { return false; }
         },
 
         dimDots(item) {
             const dims = item.match_dimensions;
             if (!dims) return [];
             const labels = {
-                food_security: 'ALIM', culinary_training: 'COCINA',
-                entrepreneurship: 'EMPRENDE',
+                entrepreneurship: 'EMPRENDE', food_security: 'ALIM', culinary_training: 'COCINA',
                 youth_employment: 'JOVEN', social_enterprise: 'SOCIAL',
                 agriculture: 'AGRO', climate: 'CLIMA', gender_inclusion: 'INCL'
             };
-            return Object.entries(dims)
-                .filter(([_, v]) => v >= 30)
-                .map(([k, v]) => ({ label: labels[k] || k, color: this.catHex(k) }));
+            return Object.entries(dims).filter(([_, v]) => v >= 30).map(([k]) => ({ label: labels[k] || k, color: this.catHex(k) }));
         }
     };
 }
 </script>
 
-</div><!-- /main-content -->
+</div>
 
 <script>
 async function checkAuth(){
