@@ -466,6 +466,17 @@ def _scrape_food_google():
     ], "Food Grants (via Google)", opp_type="grant")
 
 
+def _scrape_facebook_grants():
+    """Facebook Bolivia — food/development/NGO groups via Google Search."""
+    return google_search_apify([
+        'site:facebook.com/groups Bolivia "convocatoria" OR "fondo" OR "beca" OR "grant"',
+        'site:facebook.com/groups Bolivia "seguridad alimentaria" OR "nutrición" OR "agricultura"',
+        'site:facebook.com/groups Bolivia "ONG" OR "cooperación" OR "desarrollo social"',
+        'site:facebook.com/groups "La Paz" "emprendimiento social" OR "juventud" OR "capacitación"',
+        'site:facebook.com Bolivia "convocatoria fondos" OR "call for proposals" 2026',
+    ], "Facebook Bolivia", opp_type="grant")
+
+
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
@@ -492,6 +503,8 @@ _FOOD_SCRAPERS = [
     ("GSMA Innovation Fund", _scrape_gsma),
     # Google Search — covers all removed sources + more
     ("Food Google Search", _scrape_food_google),
+    # Facebook Bolivia groups
+    ("Facebook Bolivia", _scrape_facebook_grants),
 ]
 
 
