@@ -539,6 +539,45 @@ def _scrape_grants_google():
 # Main entry point
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# New direct scrapers: IDRC, CGIAR, FONPLATA, SEGIB
+# ---------------------------------------------------------------------------
+
+def _scrape_idrc():
+    """IDRC Canada — research grants, food systems, LATAM."""
+    return _scrape_listing_page(
+        "https://idrc.ca/en/funding",
+        "IDRC Canada",
+        "h2 a, h3 a, .card a, article a, li a",
+        parent_selector="article",
+    )
+
+
+def _scrape_cgiar():
+    """CGIAR — agricultural research funding calls."""
+    return _scrape_listing_page(
+        "https://www.cgiar.org/funders/funding-calls/",
+        "CGIAR",
+        "h2 a, h3 a, .card a, article a, li a",
+        parent_selector="article",
+    )
+
+
+def _scrape_fonplata():
+    """FONPLATA — Plata Basin development bank."""
+    results = []
+    for url in [
+        "https://www.fonplata.org/en/calls/",
+        "https://www.fonplata.org/es/convocatorias/",
+    ]:
+        results.extend(_scrape_listing_page(
+            url, "FONPLATA",
+            "h2 a, h3 a, .card a, article a, li a",
+            parent_selector="article",
+        ))
+    return results
+
+
 # All individual scrapers
 _GRANT_SCRAPERS = [
     # Aggregators
@@ -568,6 +607,10 @@ _GRANT_SCRAPERS = [
     ("JICA Bolivia", _scrape_jica),
     ("Japan Embassy Bolivia", _scrape_japan_embassy),
     ("Canada Embassy Bolivia", _scrape_canada_embassy),
+    # New: research & regional
+    ("IDRC Canada", _scrape_idrc),
+    ("CGIAR", _scrape_cgiar),
+    ("FONPLATA", _scrape_fonplata),
     # Google Search (bilateral, tech funders, EU programs, Bolivia-local)
     ("Grants Google Search", _scrape_grants_google),
 ]

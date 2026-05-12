@@ -267,6 +267,132 @@ def _scrape_skoll():
 
 
 # ---------------------------------------------------------------------------
+# Tier 1b: LATAM Social Enterprise Networks
+# ---------------------------------------------------------------------------
+
+def _scrape_avina():
+    """AVINA Foundation — LATAM sustainable development."""
+    return _scrape_js_page(
+        "https://www.avina.net/en/home/",
+        "AVINA Foundation",
+    )
+
+
+def _scrape_nesst():
+    """NESsT — social enterprise incubator, LATAM."""
+    return _scrape_js_page(
+        ["https://www.nesst.org/south-america",
+         "https://www.nesst.org/nesst-lirio-fund-criteria"],
+        "NESsT",
+    )
+
+
+def _scrape_echoing_green():
+    """Echoing Green — social entrepreneur fellowship ($100K)."""
+    return _scrape_js_page(
+        "https://echoinggreen.org/fellowship/apply/",
+        "Echoing Green",
+    )
+
+
+def _scrape_sistema_b():
+    """Sistema B / B Lab LATAM — B Corp social enterprise."""
+    return _scrape_js_page(
+        "https://www.sistemab.org/convocatorias/",
+        "Sistema B",
+    )
+
+
+def _scrape_segib():
+    """SEGIB — Ibero-American cooperation, Cocinas fund."""
+    return _scrape_js_page(
+        ["https://segib.org/es/cooperacion-iberoamericana/",
+         "https://segib.org/es/convocatoria-10-anos-10-proyectos-fondo-iberoamericano-de-cocinas-para-el-desarrollo-sostenible/"],
+        "SEGIB Iberoamericana",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Tier 1c: Food-Specific Foundations & Competitions
+# ---------------------------------------------------------------------------
+
+def _scrape_basque_culinary():
+    """Basque Culinary World Prize — social gastronomy (€100K)."""
+    return _scrape_js_page(
+        "https://www.basqueculinaryworldprize.com/",
+        "Basque Culinary Prize",
+    )
+
+
+def _scrape_rockefeller_food():
+    """Rockefeller Foundation — food systems, school meals."""
+    return _scrape_js_page(
+        "https://www.rockefellerfoundation.org/what-we-do/food/",
+        "Rockefeller Food",
+    )
+
+
+def _scrape_global_alliance_food():
+    """Global Alliance for the Future of Food."""
+    return _scrape_js_page(
+        "https://futureoffood.org/what-we-do/",
+        "Global Alliance Food",
+    )
+
+
+def _scrape_ffar():
+    """Foundation for Food & Agriculture Research."""
+    return _scrape_js_page(
+        "https://foundationfar.org/grants-funding/open-opportunities/",
+        "FFAR",
+    )
+
+
+def _scrape_zayed():
+    """Zayed Sustainability Prize — food category."""
+    return _scrape_js_page(
+        "https://zayedsustainabilityprize.com/apply",
+        "Zayed Prize",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Tier 1d: Innovation / Impact Fellowships
+# ---------------------------------------------------------------------------
+
+def _scrape_draper_richards():
+    """Draper Richards Kaplan Foundation — social enterprise."""
+    return _scrape_js_page(
+        "https://www.dfrkapital.org/apply/",
+        "Draper Richards Kaplan",
+    )
+
+
+def _scrape_grand_challenges():
+    """Grand Challenges (Gates Foundation) — development innovation."""
+    return _scrape_js_page(
+        "https://gcgh.grandchallenges.org/challenges",
+        "Grand Challenges",
+    )
+
+
+def _scrape_gsma():
+    """GSMA Innovation Fund — mobile for development."""
+    return _scrape_js_page(
+        "https://www.gsma.com/solutions-and-impact/connectivity-for-good/mobile-for-development/innovation-fund/",
+        "GSMA Innovation Fund",
+    )
+
+
+def _scrape_village_capital():
+    """Village Capital — food/agriculture accelerator."""
+    return _scrape_js_page(
+        "https://vilcap.com/apply",
+        "Village Capital",
+    )
+
+
+# ---------------------------------------------------------------------------
 # Tier 2: Google Search — food/social-specific queries
 # ---------------------------------------------------------------------------
 
@@ -311,6 +437,32 @@ def _scrape_food_google():
         "Bolivia seguridad alimentaria fondo convocatoria 2026",
         "Bolivia gastronomía social emprendimiento fondo 2026",
         "Bolivia capacitación juvenil cocina convocatoria 2026",
+        # --- NEW: LATAM social enterprise ---
+        "AVINA Foundation convocatoria Latin America 2026",
+        "NESsT social enterprise Latin America call 2026",
+        "Echoing Green fellowship Latin America 2026",
+        "Sistema B convocatoria emprendimiento social 2026",
+        # --- NEW: Food competitions & prizes ---
+        "Basque Culinary World Prize nominations 2026",
+        "Zayed Sustainability Prize food category 2026",
+        "World Food Prize youth program 2026",
+        "Rockefeller Foundation school meals Latin America 2026",
+        # --- NEW: Ibero-American ---
+        "SEGIB cooperación iberoamericana cocinas convocatoria 2026",
+        "SEGIB fondo iberoamericano cocinas desarrollo sostenible 2026",
+        "cooperación triangular iberoamérica convocatoria 2026",
+        # --- NEW: Innovation ---
+        "Grand Challenges food security developing countries 2026",
+        "GSMA Innovation Fund mobile food agriculture 2026",
+        "IDRC Canada food systems Latin America grant 2026",
+        # --- NEW: Fellowships ---
+        "Draper Richards Kaplan Foundation social enterprise 2026",
+        "Village Capital food agriculture accelerator 2026",
+        # --- NEW: Regional ---
+        "FONPLATA convocatoria proyectos Bolivia 2026",
+        "KOICA Latin America food security grant 2026",
+        "Global Alliance Future of Food grant 2026",
+        "CGIAR research grant food systems 2026",
     ], "Food Grants (via Google)", opp_type="grant")
 
 
@@ -319,6 +471,7 @@ def _scrape_food_google():
 # ---------------------------------------------------------------------------
 
 _FOOD_SCRAPERS = [
+    # Existing
     ("GlobalGiving Bolivia", _scrape_globalgiving),
     ("WFP Innovation", _scrape_wfp_innovation),
     ("GAIN Nutrition", _scrape_gain),
@@ -328,6 +481,24 @@ _FOOD_SCRAPERS = [
     ("CCRP McKnight", _scrape_ccrp),
     ("Ashoka Fellowship", _scrape_ashoka),
     ("Skoll Foundation", _scrape_skoll),
+    # LATAM social enterprise
+    ("AVINA Foundation", _scrape_avina),
+    ("NESsT", _scrape_nesst),
+    ("Echoing Green", _scrape_echoing_green),
+    ("Sistema B", _scrape_sistema_b),
+    ("SEGIB Iberoamericana", _scrape_segib),
+    # Food competitions & foundations
+    ("Basque Culinary Prize", _scrape_basque_culinary),
+    ("Rockefeller Food", _scrape_rockefeller_food),
+    ("Global Alliance Food", _scrape_global_alliance_food),
+    ("FFAR", _scrape_ffar),
+    ("Zayed Prize", _scrape_zayed),
+    # Innovation / fellowships
+    ("Draper Richards Kaplan", _scrape_draper_richards),
+    ("Grand Challenges", _scrape_grand_challenges),
+    ("GSMA Innovation Fund", _scrape_gsma),
+    ("Village Capital", _scrape_village_capital),
+    # Google Search (expanded)
     ("Food Google Search", _scrape_food_google),
 ]
 

@@ -54,7 +54,15 @@ MANQA_FOOD_KEYWORDS = [
     "community kitchen", "cocina comunitaria",
 ]
 
-ALL_KEYWORDS = GRANT_KEYWORDS + MANQA_CONEXION_KEYWORDS + MANQA_FOOD_KEYWORDS
+FELLOWSHIP_KEYWORDS = [
+    "fellowship", "beca", "award", "premio", "competition",
+    "competencia", "accelerator", "aceleradora", "incubator",
+    "incubadora", "pitch", "innovation challenge",
+    "convocatoria", "call for proposals", "apply now",
+    "seed funding", "fondo semilla", "prize", "contest",
+]
+
+ALL_KEYWORDS = GRANT_KEYWORDS + MANQA_CONEXION_KEYWORDS + MANQA_FOOD_KEYWORDS + FELLOWSHIP_KEYWORDS
 
 # ---------------------------------------------------------------------------
 # Category dimension keywords (for category assignment)
