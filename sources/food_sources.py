@@ -463,6 +463,19 @@ def _scrape_food_google():
         "KOICA Latin America food security grant 2026",
         "Global Alliance Future of Food grant 2026",
         "CGIAR research grant food systems 2026",
+        # --- NEW: Wayna / Entrepreneurship / Innovation ---
+        "Bolivia emprendimiento juvenil convocatoria fondo 2026",
+        "Bolivia aceleradora startups innovación social 2026",
+        "Latin America youth entrepreneurship accelerator grant 2026",
+        "Bolivia fondo semilla emprendimiento jóvenes 2026",
+        "Bolivia innovación social modelo negocio convocatoria 2026",
+        "MIPYME Bolivia fondo cooperación emprendimiento 2026",
+        "women entrepreneurs Latin America grant fund 2026",
+        "mujeres emprendedoras Bolivia fondo convocatoria 2026",
+        "social innovation challenge Latin America Bolivia 2026",
+        "youth market access entrepreneurship Bolivia 2026",
+        "BID Lab innovación social Bolivia 2026",
+        "fondo concursable emprendimiento Bolivia 2026",
     ], "Food Grants (via Google)", opp_type="grant")
 
 

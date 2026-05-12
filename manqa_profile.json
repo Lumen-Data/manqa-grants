@@ -1,10 +1,30 @@
 {
-  "name": "Manq'a Sostenibles",
-  "org": "Manq'a / Conexión ICCO Latin America",
-  "description": "Social enterprise cooking schools for vulnerable youth in Bolivia. 15 schools, 5,500+ graduates, social restaurants in La Paz and El Alto. Founded by Claus Meyer/Melting Pot, operated by Conexión ICCO.",
+  "name": "Manq'a Sostenibles & Wayna",
+  "org": "Manq'a / Wayna / Conexión ICCO Latin America",
+  "description": "Manq'a: Social enterprise cooking schools for vulnerable youth in Bolivia. 15 schools, 5,500+ graduates, social restaurants. Wayna: Mercado de Emprendedores — youth entrepreneurship market, business acceleration, social innovation models, 134+ entrepreneurs (72% women-led). Both operated by Conexión ICCO in La Paz.",
   "dimensions": {
+    "entrepreneurship": {
+      "weight": 15,
+      "label": "Emprendimiento e Innovación",
+      "keywords": [
+        "entrepreneurship", "emprendimiento", "startup", "accelerator",
+        "aceleradora", "incubator", "incubadora", "innovation",
+        "innovación", "business model", "modelo de negocio",
+        "market access", "acceso a mercados", "formalization",
+        "formalización", "business development", "desarrollo empresarial",
+        "seed fund", "fondo semilla", "venture", "pitch",
+        "business plan", "plan de negocios", "SME", "MIPYME",
+        "microempresa", "small business", "negocio",
+        "commercialization", "comercialización",
+        "digital entrepreneurship", "emprendimiento digital",
+        "youth entrepreneurship", "emprendimiento juvenil",
+        "women entrepreneurs", "mujeres emprendedoras",
+        "social innovation", "innovación social",
+        "impact investing", "inversión de impacto"
+      ]
+    },
     "food_security": {
-      "weight": 20,
+      "weight": 15,
       "label": "Seguridad Alimentaria",
       "keywords": [
         "food security", "seguridad alimentaria", "food sovereignty",
@@ -18,7 +38,7 @@
       ]
     },
     "culinary_training": {
-      "weight": 20,
+      "weight": 15,
       "label": "Formación Culinaria",
       "keywords": [
         "culinary", "culinaria", "gastronomy", "gastronomía", "chef",

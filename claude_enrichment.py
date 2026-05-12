@@ -34,7 +34,7 @@ VALIDATE_MAX_AGE_HOURS = 48
 VALIDATE_DEADLINE_DAYS = 14
 
 DIMENSIONS = [
-    "food_security", "culinary_training", "youth_employment",
+    "entrepreneurship", "food_security", "culinary_training", "youth_employment",
     "social_enterprise", "agriculture", "climate", "gender_inclusion",
 ]
 
@@ -152,7 +152,7 @@ Snippet: {item.get('snippet', '')}
 Return JSON:
 {{
   "match_score": 0-100,
-  "category": "food_security|culinary_training|youth_employment|social_enterprise|agriculture|climate|gender_inclusion",
+  "category": "entrepreneurship|food_security|culinary_training|youth_employment|social_enterprise|agriculture|climate|gender_inclusion",
   "summary": "one-line description in Spanish",
   "bolivia_applicable": true or false,
   "is_funding_opportunity": true or false,
@@ -162,6 +162,7 @@ Return JSON:
 IMPORTANT: Set is_funding_opportunity to TRUE only if this is an actual grant, fellowship, prize, call for proposals, or funding application that an organization can apply to. Set FALSE if it is a news article, blog post, organizational overview, project description, or general information page about funding.
 
 Score generously across ALL organization dimensions:
+- entrepreneurship (emprendimiento, innovación, aceleradoras, fondo semilla, startups, modelo de negocio, acceso a mercados, MIPYME)
 - food_security (seguridad alimentaria, nutrición, sistemas alimentarios)
 - culinary_training (gastronomía, escuelas de cocina, formación culinaria)
 - youth_employment (empleo juvenil, capacitación, desarrollo de habilidades)
@@ -170,7 +171,7 @@ Score generously across ALL organization dimensions:
 - climate (resiliencia climática, sostenibilidad, bioeconomía)
 - gender_inclusion (género, inclusión, mujeres, comunidades vulnerables)
 
-A food security grant, a youth culinary training fund, a social enterprise award, and an agriculture development call are ALL relevant."""
+A startup accelerator, a youth entrepreneurship fund, a food security grant, a social enterprise award, and an innovation challenge are ALL relevant."""
 
 
 def quick_score(item, profile):
@@ -217,6 +218,7 @@ Return JSON:
   "match_score": 0-100,
   "match_reason": "2-3 sentences in Spanish explaining fit",
   "match_dimensions": {{
+    "entrepreneurship": 0-100,
     "food_security": 0-100,
     "culinary_training": 0-100,
     "youth_employment": 0-100,
@@ -225,7 +227,7 @@ Return JSON:
     "climate": 0-100,
     "gender_inclusion": 0-100
   }},
-  "category": "food_security|culinary_training|youth_employment|social_enterprise|agriculture|climate|gender_inclusion",
+  "category": "entrepreneurship|food_security|culinary_training|youth_employment|social_enterprise|agriculture|climate|gender_inclusion",
   "summary": "one-line description in Spanish",
   "deadline": "YYYY-MM-DD or null",
   "requirements": ["key requirement 1", "key requirement 2"],

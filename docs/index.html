@@ -120,7 +120,7 @@
     </template>
 
     <!-- Category Stats -->
-    <section class="grid grid-cols-3 md:grid-cols-7 gap-2 sm:gap-3">
+    <section class="grid grid-cols-4 md:grid-cols-8 gap-2 sm:gap-3">
         <template x-for="s in statCards" :key="s.cat">
             <div class="p-3 sm:p-4 rounded-lg relative overflow-hidden group cursor-pointer transition-all duration-200"
                  :class="activeCategory === s.cat ? 'ring-2 scale-[1.03] bg-white shadow-md' : 'bg-white border border-border hover:shadow-sm'"
@@ -358,16 +358,18 @@ function dashboard() {
         newCount: 0,
 
         statCards: [
-            { cat: 'food_security',      label: 'Alimentaria',    hex: '#E8632B' },
-            { cat: 'culinary_training',   label: 'Culinaria',     hex: '#D4357A' },
-            { cat: 'youth_employment',    label: 'Juventud',      hex: '#7BB530' },
-            { cat: 'social_enterprise',   label: 'Social',        hex: '#9B7DB8' },
-            { cat: 'agriculture',         label: 'Agricultura',   hex: '#84cc16' },
-            { cat: 'climate',             label: 'Clima',         hex: '#06b6d4' },
-            { cat: 'gender_inclusion',    label: 'Inclusión',     hex: '#2D3664' },
+            { cat: 'entrepreneurship',    label: 'Emprendimiento', hex: '#f97316' },
+            { cat: 'food_security',       label: 'Alimentaria',    hex: '#E8632B' },
+            { cat: 'culinary_training',   label: 'Culinaria',      hex: '#D4357A' },
+            { cat: 'youth_employment',    label: 'Juventud',       hex: '#7BB530' },
+            { cat: 'social_enterprise',   label: 'Social',         hex: '#9B7DB8' },
+            { cat: 'agriculture',         label: 'Agricultura',    hex: '#84cc16' },
+            { cat: 'climate',             label: 'Clima',          hex: '#06b6d4' },
+            { cat: 'gender_inclusion',    label: 'Inclusión',      hex: '#2D3664' },
         ],
 
         _catMap: {
+            entrepreneurship: { label: 'Emprendimiento', hex: '#f97316' },
             food_security:    { label: 'Alimentaria',  hex: '#E8632B' },
             culinary_training:{ label: 'Culinaria',    hex: '#D4357A' },
             youth_employment: { label: 'Juventud',     hex: '#7BB530' },
@@ -534,6 +536,7 @@ function dashboard() {
             if (!dims) return [];
             const labels = {
                 food_security: 'ALIM', culinary_training: 'COCINA',
+                entrepreneurship: 'EMPRENDE',
                 youth_employment: 'JOVEN', social_enterprise: 'SOCIAL',
                 agriculture: 'AGRO', climate: 'CLIMA', gender_inclusion: 'INCL'
             };
