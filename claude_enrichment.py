@@ -366,14 +366,25 @@ def enrich_new_items(items):
     profile = _load_profile()
     new_items = [i for i in items if i.get("is_new") and not i.get("enriched")]
 
-    if not new_items:
-        print("  [enrichment] No new items to enrich", file=sys.stderr)
+    # Backfill: if budget remains, enrich older items that missed the cap
+    backfill = [i for i in items if not i.get("is_new") and not i.get("enriched")]
+    if backfill:
+        backfill.sort(key=lambda i: i.get("relevance", 0), reverse=True)
+
+    to_enrich = new_items + backfill
+
+    if not to_enrich:
+        print("  [enrichment] No items to enrich", file=sys.stderr)
         return
 
-    if len(new_items) > PASS1_MAX_ITEMS:
-        new_items.sort(key=lambda i: i.get("relevance", 0), reverse=True)
-        new_items = new_items[:PASS1_MAX_ITEMS]
-        print(f"  [enrichment] Capped to {PASS1_MAX_ITEMS} items", file=sys.stderr)
+    if len(to_enrich) > PASS1_MAX_ITEMS:
+        # Prioritize new items, then backfill
+        to_enrich = to_enrich[:PASS1_MAX_ITEMS]
+
+    backfill_count = sum(1 for i in to_enrich if not i.get("is_new"))
+    new_count = len(to_enrich) - backfill_count
+    print(f"  [enrichment] Pass 1: {new_count} new + {backfill_count} backfill = {len(to_enrich)} items", file=sys.stderr)
+    new_items = to_enrich
 
     print(f"  [enrichment] Pass 1: Quick scoring {len(new_items)} new items...", file=sys.stderr)
     pass2_candidates = []
