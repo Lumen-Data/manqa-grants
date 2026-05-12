@@ -42,7 +42,7 @@ jobs:
 
       - name: Run scraper
         env:
-          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
+          SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GLOBALGIVING_API_KEY: ${{ secrets.GLOBALGIVING_API_KEY }}
         run: python3 scraper.py --save

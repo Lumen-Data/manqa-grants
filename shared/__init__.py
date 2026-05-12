@@ -1,1 +1,1 @@
-"""Shared utilities for the scraper hub."""
+# Shared utilities
