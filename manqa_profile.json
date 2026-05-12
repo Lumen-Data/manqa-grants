@@ -1,0 +1,98 @@
+{
+  "name": "Manq'a Sostenibles",
+  "org": "Manq'a / Conexión ICCO Latin America",
+  "description": "Social enterprise cooking schools for vulnerable youth in Bolivia. 15 schools, 5,500+ graduates, social restaurants in La Paz and El Alto. Founded by Claus Meyer/Melting Pot, operated by Conexión ICCO.",
+  "dimensions": {
+    "food_security": {
+      "weight": 20,
+      "label": "Seguridad Alimentaria",
+      "keywords": [
+        "food security", "seguridad alimentaria", "food sovereignty",
+        "soberanía alimentaria", "food systems", "sistemas alimentarios",
+        "nutrition", "nutrición", "alimentación", "hunger", "hambre",
+        "malnutrition", "desnutrición", "food production",
+        "producción alimentaria", "food value chain", "cadena de valor",
+        "school feeding", "alimentación escolar", "food education",
+        "educación alimentaria", "local food", "alimentos locales",
+        "food waste", "desperdicio alimentario"
+      ]
+    },
+    "culinary_training": {
+      "weight": 20,
+      "label": "Formación Culinaria",
+      "keywords": [
+        "culinary", "culinaria", "gastronomy", "gastronomía", "chef",
+        "cocina", "cooking", "culinary training", "capacitación culinaria",
+        "food preparation", "social gastronomy", "gastronomía social",
+        "cooking school", "escuela de cocina", "culinary school",
+        "culinary arts", "artes culinarias", "restaurant",
+        "restaurante", "hospitality", "hotelería"
+      ]
+    },
+    "youth_employment": {
+      "weight": 15,
+      "label": "Juventud y Empleo",
+      "keywords": [
+        "youth", "juventud", "jóvenes", "youth employment",
+        "empleo juvenil", "young people", "adolescentes",
+        "empowerment", "empoderamiento", "youth training",
+        "capacitación juvenil", "vocational training",
+        "formación técnica", "skill development",
+        "desarrollo de habilidades", "first job", "primer empleo",
+        "youth leadership", "liderazgo juvenil"
+      ]
+    },
+    "social_enterprise": {
+      "weight": 15,
+      "label": "Emprendimiento Social",
+      "keywords": [
+        "social enterprise", "emprendimiento social", "social restaurant",
+        "restaurante social", "social business", "empresa social",
+        "impact", "impacto social", "social innovation",
+        "innovación social", "social economy", "economía social",
+        "cooperative", "cooperativa", "community enterprise",
+        "emprendimiento comunitario", "inclusive business",
+        "negocio inclusivo"
+      ]
+    },
+    "agriculture": {
+      "weight": 10,
+      "label": "Agricultura",
+      "keywords": [
+        "agriculture", "agricultura", "urban agriculture",
+        "agricultura urbana", "local ingredients", "ingredientes locales",
+        "smallholder", "small farmer", "campesino",
+        "rural development", "desarrollo rural", "agroecology",
+        "agroecología", "permaculture", "permacultura",
+        "sustainable agriculture", "agricultura sostenible",
+        "food production", "producción agrícola"
+      ]
+    },
+    "climate": {
+      "weight": 10,
+      "label": "Clima y Medio Ambiente",
+      "keywords": [
+        "climate resilience", "resiliencia climática", "climate change",
+        "cambio climático", "sustainable", "sostenible", "environment",
+        "medio ambiente", "bioeconomy", "bioeconomía",
+        "sustainability", "sostenibilidad", "green economy",
+        "economía verde", "circular economy", "economía circular",
+        "biodiversity", "biodiversidad"
+      ]
+    },
+    "gender_inclusion": {
+      "weight": 10,
+      "label": "Género e Inclusión",
+      "keywords": [
+        "gender", "género", "women", "mujeres", "digital inclusion",
+        "inclusión digital", "indigenous", "indígena", "vulnerable",
+        "marginalized", "equality", "igualdad", "inclusion",
+        "inclusión", "diversity", "diversidad", "equity", "equidad",
+        "women empowerment", "empoderamiento femenino"
+      ]
+    }
+  },
+  "location": "La Paz, Bolivia",
+  "countries": ["Bolivia"],
+  "languages": ["Spanish", "English"]
+}

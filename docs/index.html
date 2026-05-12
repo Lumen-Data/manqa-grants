@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manq'a Grants — Becas y Fondos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    "manqa-orange": "#E8632B",
+                    "manqa-pink": "#D4357A",
+                    "manqa-green": "#7BB530",
+                    "manqa-purple": "#9B7DB8",
+                    "manqa-navy": "#2D3664",
+                    "manqa-lime": "#84cc16",
+                    "manqa-cyan": "#06b6d4",
+                    "surface": "#FAFAFA",
+                    "surface-card": "#FFFFFF",
+                    "surface-hover": "#F5F5F5",
+                    "text-primary": "#2D3664",
+                    "text-secondary": "#6B7280",
+                    "text-muted": "#9CA3AF",
+                    "border": "#E5E7EB",
+                    "border-light": "#F3F4F6",
+                    "error": "#EF4444",
+                },
+                fontFamily: {
+                    "sans": ["Montserrat", "system-ui", "sans-serif"],
+                },
+            }
+        }
+    }
+</script>
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    [x-cloak] { display: none !important; }
+    body { font-family: 'Montserrat', system-ui, sans-serif; }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-surface text-text-primary antialiased min-h-screen flex flex-col relative overflow-x-hidden">
+
+<!-- Auth Gate -->
+<div id="auth-gate" style="position:fixed;inset:0;z-index:9999;background:#FAFAFA;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',system-ui,sans-serif;">
+  <div style="text-align:center;max-width:340px;padding:24px;">
+    <img alt="Manq'a Logo" src="manqa-logo.jpeg" style="width:180px;height:auto;object-fit:contain;margin:0 auto 16px auto;display:block;"/>
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:4px;color:#E8632B;margin-bottom:12px;font-weight:700;">Acceso Restringido</div>
+    <h2 style="font-size:20px;color:#2D3664;margin-bottom:24px;font-weight:700;">Becas y Fondos</h2>
+    <input id="auth-input" type="password" placeholder="Contraseña" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid #E5E7EB;background:#FFFFFF;color:#2D3664;font-size:14px;outline:none;margin-bottom:12px;font-family:'Montserrat',system-ui,sans-serif;" onkeydown="if(event.key==='Enter')checkAuth()">
+    <button onclick="checkAuth()" style="width:100%;padding:12px;border-radius:10px;border:none;background:#E8632B;color:#FFFFFF;font-size:14px;font-weight:600;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;">Entrar</button>
+    <p id="auth-error" style="color:#EF4444;font-size:12px;margin-top:12px;display:none;">Contraseña incorrecta</p>
+  </div>
+</div>
+
+<div id="main-content" style="display:none;" class="overflow-x-hidden w-full">
+
+<div x-data="dashboard()" x-init="init()" x-cloak>
+
+<!-- Navigation -->
+<div class="sm:hidden flex flex-col items-center py-5 border-b border-border">
+    <img alt="Manq'a Logo" class="h-20 w-auto object-contain mb-1" src="manqa-logo.jpeg"/>
+    <span class="text-lg text-manqa-navy font-bold">Becas y Fondos</span>
+</div>
+<nav class="bg-white border-b border-border hidden sm:flex justify-between items-center max-w-[1100px] mx-auto px-6 py-4 w-full z-50">
+    <div class="flex items-center gap-3">
+        <img alt="Manq'a Logo" class="h-16 w-auto object-contain" src="manqa-logo.jpeg"/>
+        <div>
+            <span class="text-xl text-manqa-navy font-bold block leading-tight">Becas y Fondos</span>
+            <span class="text-xs text-text-secondary">Oportunidades para Manq'a Sostenibles</span>
+        </div>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative">
+            <input x-model="search" @input="page = 1" class="bg-surface border border-border rounded-full py-1.5 px-4 text-sm text-text-primary focus:outline-none focus:border-manqa-orange placeholder-text-muted w-48" placeholder="Buscar..." type="text"/>
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-[18px]">search</span>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-grow max-w-[1100px] w-full mx-auto px-3 sm:px-6 py-6 sm:py-8 flex flex-col gap-6 sm:gap-10 z-10">
+
+    <!-- Scan info -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <p class="text-sm text-text-secondary">
+            Último escaneo: <span class="font-medium" x-text="lastScan"></span> &bull;
+            <span x-text="data.length"></span> oportunidades
+            <template x-if="newCount > 0">
+                <span class="ml-2 bg-manqa-green/20 text-manqa-green text-xs font-semibold px-2 py-0.5 rounded-full" x-text="newCount + ' nuevas'"></span>
+            </template>
+        </p>
+        <div class="sm:hidden w-full">
+            <input x-model="search" @input="page = 1" class="w-full bg-white border border-border rounded-lg py-2 px-4 text-sm text-text-primary focus:outline-none focus:border-manqa-orange placeholder-text-muted" placeholder="Buscar..." type="text"/>
+        </div>
+    </div>
+    <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-manqa-orange/40 to-transparent -mt-4"></div>
+
+    <!-- Category Stats -->
+    <section class="grid grid-cols-3 md:grid-cols-7 gap-2 sm:gap-3">
+        <template x-for="s in statCards" :key="s.cat">
+            <div class="p-3 sm:p-4 rounded-lg relative overflow-hidden group cursor-pointer transition-all duration-200"
+                 :class="activeCategory === s.cat ? 'ring-2 scale-[1.03] bg-white shadow-md' : 'bg-white border border-border hover:shadow-sm'"
+                 :style="activeCategory === s.cat ? 'ring-color:' + s.hex : ''"
+                 @click="toggleCategory(s.cat)">
+                <div class="absolute top-0 left-0 w-full h-[3px]" :style="'background: ' + s.hex"></div>
+                <div class="flex flex-col gap-1 relative">
+                    <span class="text-2xl sm:text-3xl font-bold" :style="'color: ' + s.hex" x-text="catStats[s.cat] || 0"></span>
+                    <span class="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold text-text-secondary leading-tight" x-text="s.label"></span>
+                </div>
+            </div>
+        </template>
+    </section>
+
+    <!-- Priority Grants -->
+    <section class="flex flex-col gap-5" x-show="!activeCategory && !search">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl text-manqa-orange font-bold opacity-80">01</span>
+            <h2 class="text-lg font-semibold text-manqa-navy">Prioridad</h2>
+            <span class="text-text-secondary text-sm ml-2">Mejores coincidencias</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <template x-for="item in topPicks" :key="item.url">
+                <a :href="item.url" target="_blank" rel="noopener"
+                   class="bg-white border border-border rounded-xl p-4 sm:p-5 flex flex-col gap-2 sm:gap-3 relative overflow-hidden hover:shadow-md transition-all no-underline border-l-[4px]"
+                   :style="'border-left-color: ' + catHex(item.category)">
+                    <div class="flex items-center gap-2 justify-end">
+                        <span x-show="item.is_new" class="bg-manqa-green/20 text-manqa-green text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">nueva</span>
+                        <span class="px-2 py-1 rounded text-xs font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded uppercase font-bold"
+                              :style="'background: ' + catHex(item.category) + '1a; color: ' + catHex(item.category)"
+                              x-text="catLabel(item.category)"></span>
+                        <span x-show="item.status === 'expired' || item.status === 'closed'" class="text-[10px] px-1.5 py-0.5 rounded bg-error/10 text-error uppercase font-bold" x-text="item.status"></span>
+                        <span class="text-text-muted text-xs" x-text="item.source"></span>
+                    </div>
+                    <h3 class="text-[15px] font-semibold text-manqa-navy leading-tight" x-text="item.title"></h3>
+                    <p class="text-sm text-text-secondary line-clamp-2" x-text="item.summary || item.snippet"></p>
+                    <p x-show="item.action_tip" class="text-xs text-manqa-orange/80 italic" x-text="item.action_tip"></p>
+                    <div class="flex flex-wrap gap-2 mt-auto pt-2 items-center">
+                        <template x-for="dim in dimDots(item)" :key="dim.label">
+                            <span class="text-[9px] px-1.5 py-0.5 rounded-full border" :style="'border-color:' + dim.color + ';color:' + dim.color" x-text="dim.label"></span>
+                        </template>
+                        <span x-show="item.deadline" class="text-xs ml-auto flex items-center gap-1" :class="isExpiringSoon(item) ? 'text-manqa-orange font-semibold' : 'text-text-muted'">
+                            <span class="material-symbols-outlined text-[14px]">schedule</span>
+                            <span x-text="item.deadline"></span>
+                        </span>
+                    </div>
+                </a>
+            </template>
+        </div>
+    </section>
+
+    <!-- Browse All -->
+    <section class="flex flex-col gap-5">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl text-manqa-orange font-bold opacity-80" x-text="(!activeCategory && !search) ? '02' : ''"></span>
+            <h2 class="text-lg font-semibold text-manqa-navy">Todas las Oportunidades</h2>
+            <span class="text-text-secondary text-sm ml-2" x-show="activeCategory">
+                Filtro: <span class="text-manqa-orange font-medium" x-text="catLabel(activeCategory)"></span>
+                <button @click="activeCategory = ''; page = 1" class="text-text-muted hover:text-manqa-orange ml-1">&times;</button>
+            </span>
+            <span class="text-text-secondary text-sm ml-auto" x-text="filtered.length + ' resultados'"></span>
+        </div>
+
+        <!-- Status filter -->
+        <div class="flex flex-wrap gap-2 mb-1">
+            <button @click="statusFilter = ''; page = 1"
+                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
+                    :class="statusFilter === '' ? 'bg-manqa-green text-white border-manqa-green shadow-sm' : 'border-border text-text-secondary hover:border-manqa-green'">
+                Activas
+            </button>
+            <button @click="statusFilter = 'all'; page = 1"
+                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
+                    :class="statusFilter === 'all' ? 'bg-manqa-navy text-white border-manqa-navy shadow-sm' : 'border-border text-text-secondary hover:border-manqa-navy'">
+                Todas
+            </button>
+            <button @click="statusFilter = 'expired'; page = 1"
+                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
+                    :class="statusFilter === 'expired' ? 'bg-error text-white border-error shadow-sm' : 'border-border text-text-secondary hover:border-error'">
+                Expiradas
+            </button>
+            <button @click="statusFilter = 'new'; page = 1"
+                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
+                    :class="statusFilter === 'new' ? 'bg-manqa-green text-white border-manqa-green shadow-sm' : 'border-border text-text-secondary hover:border-manqa-green'">
+                Nuevas
+            </button>
+        </div>
+
+        <!-- Source filter -->
+        <div class="flex flex-wrap gap-2">
+            <button @click="activeSources = []; page = 1"
+                    class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
+                    :class="activeSources.length === 0 ? 'bg-manqa-orange text-white border-manqa-orange shadow-sm' : 'border-border text-text-secondary hover:border-manqa-orange'">
+                Todas las Fuentes
+            </button>
+            <template x-for="src in sources" :key="src">
+                <button @click="activeSources.includes(src) ? activeSources = activeSources.filter(s => s !== src) : activeSources = [...activeSources, src]; page = 1"
+                        class="text-xs px-3 py-1.5 rounded-full border-2 transition-all duration-200 font-medium"
+                        :class="activeSources.includes(src) ? 'bg-manqa-orange text-white border-manqa-orange shadow-sm' : 'border-border text-text-secondary hover:border-manqa-orange'"
+                        x-text="src"></button>
+            </template>
+        </div>
+
+        <!-- Cards (mobile) / Table (desktop) -->
+        <!-- Mobile cards -->
+        <div class="sm:hidden flex flex-col gap-3">
+            <template x-for="item in paginated" :key="item.url">
+                <a :href="item.url" target="_blank" rel="noopener"
+                   class="bg-white border border-border rounded-xl p-4 flex flex-col gap-2 no-underline hover:shadow-sm transition-all border-l-[4px]"
+                   :style="'border-left-color: ' + catHex(item.category)">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded uppercase font-bold"
+                              :style="'background: ' + catHex(item.category) + '1a; color: ' + catHex(item.category)"
+                              x-text="catLabel(item.category)"></span>
+                        <span class="text-xs font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
+                        <span x-show="item.is_new" class="bg-manqa-green/20 text-manqa-green text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">nueva</span>
+                        <span x-show="item.status === 'expired' || item.status === 'closed'" class="text-[10px] px-1.5 py-0.5 rounded bg-error/10 text-error uppercase font-bold" x-text="item.status"></span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-manqa-navy leading-tight" x-text="item.title"></h3>
+                    <p class="text-xs text-text-secondary line-clamp-2" x-text="item.summary || item.snippet"></p>
+                    <div class="flex items-center justify-between text-xs text-text-muted">
+                        <span x-text="item.source"></span>
+                        <span x-show="item.deadline" class="flex items-center gap-1" :class="isExpiringSoon(item) ? 'text-manqa-orange font-semibold' : ''">
+                            <span class="material-symbols-outlined text-[12px]">schedule</span>
+                            <span x-text="item.deadline"></span>
+                        </span>
+                    </div>
+                </a>
+            </template>
+        </div>
+
+        <!-- Desktop table -->
+        <div class="hidden sm:block overflow-x-auto bg-white border border-border rounded-xl">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-border">
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted">Categoría</th>
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted cursor-pointer hover:text-manqa-orange" @click="sortBy('match_score')">
+                            Score <span class="text-[10px]" x-text="sortField === 'match_score' ? (sortDir === -1 ? '▼' : '▲') : ''"></span>
+                        </th>
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted">Oportunidad</th>
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted">Fuente</th>
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted hidden lg:table-cell cursor-pointer hover:text-manqa-orange" @click="sortBy('date_found')">Fecha</th>
+                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-text-muted hidden lg:table-cell">Límite</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border-light">
+                    <template x-for="item in paginated" :key="item.url">
+                        <tr class="group transition-all duration-200 hover:bg-surface-hover border-l-4 cursor-pointer"
+                            :class="item.is_new ? 'border-l-manqa-green bg-manqa-green/[0.03]' : 'border-l-transparent hover:border-l-manqa-orange'"
+                            @click="window.open(item.url, '_blank')">
+                            <td class="px-4 py-3">
+                                <span class="text-[10px] px-2 py-0.5 rounded uppercase font-bold whitespace-nowrap"
+                                      :style="'background: ' + catHex(item.category) + '1a; color: ' + catHex(item.category)"
+                                      x-text="catLabel(item.category)"></span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="text-sm font-bold" :class="scoreClass(item)" x-text="item.match_score || item.relevance"></span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-text-primary font-medium text-sm leading-tight" x-text="item.title"></span>
+                                    <span x-show="item.is_new" class="shrink-0 bg-manqa-green/20 text-manqa-green text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">nueva</span>
+                                    <span x-show="item.status === 'expired' || item.status === 'closed'" class="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-error/10 text-error uppercase font-bold" x-text="item.status"></span>
+                                </div>
+                                <div x-show="item.summary" class="text-text-secondary text-xs mt-0.5 line-clamp-1 max-w-md" x-text="item.summary"></div>
+                            </td>
+                            <td class="px-4 py-3 text-text-secondary text-sm whitespace-nowrap" x-text="item.source"></td>
+                            <td class="px-4 py-3 text-text-muted text-sm hidden lg:table-cell whitespace-nowrap" x-text="item.date_found"></td>
+                            <td class="px-4 py-3 text-sm hidden lg:table-cell whitespace-nowrap" :class="item.deadline ? 'text-manqa-pink font-medium' : 'text-text-muted/30'" x-text="item.deadline || '-'"></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center" x-show="totalPages > 1">
+            <button @click="page = Math.max(1, page - 1)"
+                    :disabled="page === 1"
+                    class="px-4 py-2 text-sm border border-border rounded-lg text-text-secondary hover:border-manqa-orange hover:text-manqa-orange disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                <span class="material-symbols-outlined text-[16px] align-middle">chevron_left</span> Anterior
+            </button>
+            <span class="text-sm text-text-secondary">
+                Página <span x-text="page"></span> de <span x-text="totalPages"></span>
+            </span>
+            <button @click="page = Math.min(totalPages, page + 1)"
+                    :disabled="page === totalPages"
+                    class="px-4 py-2 text-sm border border-border rounded-lg text-text-secondary hover:border-manqa-orange hover:text-manqa-orange disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                Siguiente <span class="material-symbols-outlined text-[16px] align-middle">chevron_right</span>
+            </button>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="bg-white border-t border-border py-6 w-full mt-auto">
+    <div class="max-w-[1100px] mx-auto px-3 sm:px-6 flex flex-col md:flex-row justify-between items-center opacity-60 gap-4">
+        <span class="text-text-secondary text-sm">Manq'a Grants &bull; Actualizado cada 2 días</span>
+        <div class="flex gap-6">
+            <a class="text-text-secondary text-sm hover:text-manqa-orange transition-colors" href="https://manqa.org.bo" target="_blank">manqa.org.bo</a>
+        </div>
+    </div>
+</footer>
+
+</div>
+
+<script>
+function dashboard() {
+    return {
+        data: [],
+        search: '',
+        activeCategory: '',
+        activeSources: [],
+        statusFilter: '',
+        sortField: 'match_score',
+        sortDir: -1,
+        page: 1,
+        perPage: 25,
+        lastScan: '',
+        newCount: 0,
+
+        statCards: [
+            { cat: 'food_security',      label: 'Alimentaria',    hex: '#E8632B' },
+            { cat: 'culinary_training',   label: 'Culinaria',     hex: '#D4357A' },
+            { cat: 'youth_employment',    label: 'Juventud',      hex: '#7BB530' },
+            { cat: 'social_enterprise',   label: 'Social',        hex: '#9B7DB8' },
+            { cat: 'agriculture',         label: 'Agricultura',   hex: '#84cc16' },
+            { cat: 'climate',             label: 'Clima',         hex: '#06b6d4' },
+            { cat: 'gender_inclusion',    label: 'Inclusión',     hex: '#2D3664' },
+        ],
+
+        _catMap: {
+            food_security:    { label: 'Alimentaria',  hex: '#E8632B' },
+            culinary_training:{ label: 'Culinaria',    hex: '#D4357A' },
+            youth_employment: { label: 'Juventud',     hex: '#7BB530' },
+            social_enterprise:{ label: 'Social',       hex: '#9B7DB8' },
+            agriculture:      { label: 'Agricultura',  hex: '#84cc16' },
+            climate:          { label: 'Clima',        hex: '#06b6d4' },
+            gender_inclusion: { label: 'Inclusión',    hex: '#2D3664' },
+            general:          { label: 'General',      hex: '#6B7280' },
+        },
+
+        async init() {
+            try {
+                const res = await fetch('latest.json');
+                const json = await res.json();
+                if (json.items) {
+                    this.data = json.items;
+                    const raw = json.scan_timestamp;
+                    if (raw) {
+                        const parts = raw.replace(' BOT', '').split(' ');
+                        const [y, mo, da] = parts[0].split('-').map(Number);
+                        const [h24, mi] = (parts[1] || '0:00').split(':').map(Number);
+                        const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                        const h = h24 % 12 || 12;
+                        const min = String(mi).padStart(2, '0');
+                        const ampm = h24 >= 12 ? 'PM' : 'AM';
+                        this.lastScan = `${da} de ${meses[mo - 1]} ${y}, ${h}:${min} ${ampm}`;
+                    }
+                } else {
+                    this.data = json;
+                }
+                this.newCount = this.data.filter(d => d.is_new).length;
+            } catch (e) {
+                console.error('Failed to load data:', e);
+            }
+        },
+
+        get catStats() {
+            const counts = {};
+            for (const d of this.data) {
+                const cat = d.category || 'general';
+                counts[cat] = (counts[cat] || 0) + 1;
+            }
+            return counts;
+        },
+
+        get topPicks() {
+            return this.data
+                .filter(d => (d.match_score || d.relevance) >= 30 && d.status !== 'expired' && d.status !== 'closed')
+                .sort((a, b) => (b.match_score || b.relevance) - (a.match_score || a.relevance))
+                .slice(0, 6);
+        },
+
+        get sources() {
+            return [...new Set(this.data.map(d => d.source))].sort();
+        },
+
+        get filtered() {
+            let items = this.data;
+            if (this.statusFilter === 'expired') {
+                items = items.filter(d => d.status === 'expired' || d.status === 'closed');
+            } else if (this.statusFilter === 'new') {
+                items = items.filter(d => d.is_new);
+            } else if (this.statusFilter !== 'all') {
+                items = items.filter(d => d.status !== 'expired' && d.status !== 'closed');
+            }
+            if (this.activeCategory) {
+                items = items.filter(d => (d.category || 'general') === this.activeCategory);
+            }
+            if (this.activeSources.length > 0) {
+                items = items.filter(d => this.activeSources.includes(d.source));
+            }
+            if (this.search) {
+                const q = this.search.toLowerCase();
+                items = items.filter(d =>
+                    d.title.toLowerCase().includes(q) ||
+                    (d.snippet && d.snippet.toLowerCase().includes(q)) ||
+                    d.source.toLowerCase().includes(q) ||
+                    (d.keywords || []).some(k => k.toLowerCase().includes(q))
+                );
+            }
+            const dir = this.sortDir;
+            const field = this.sortField;
+            items = [...items].sort((a, b) => {
+                let va = a[field] ?? '';
+                let vb = b[field] ?? '';
+                if (field === 'match_score') {
+                    va = a.match_score || a.relevance || 0;
+                    vb = b.match_score || b.relevance || 0;
+                }
+                if (typeof va === 'number') return (va - vb) * dir;
+                return String(va).localeCompare(String(vb)) * dir;
+            });
+            return items;
+        },
+
+        get totalPages() {
+            return Math.max(1, Math.ceil(this.filtered.length / this.perPage));
+        },
+
+        get paginated() {
+            const start = (this.page - 1) * this.perPage;
+            return this.filtered.slice(start, start + this.perPage);
+        },
+
+        toggleCategory(cat) {
+            this.activeCategory = this.activeCategory === cat ? '' : cat;
+            this.page = 1;
+        },
+
+        sortBy(field) {
+            if (this.sortField === field) {
+                this.sortDir *= -1;
+            } else {
+                this.sortField = field;
+                this.sortDir = -1;
+            }
+            this.page = 1;
+        },
+
+        catHex(cat) {
+            return (this._catMap[cat] || this._catMap.general).hex;
+        },
+
+        catLabel(cat) {
+            return (this._catMap[cat] || this._catMap.general).label;
+        },
+
+        scoreClass(item) {
+            const s = item.match_score || item.relevance || 0;
+            if (s >= 70) return 'text-manqa-green bg-manqa-green/10 border border-manqa-green/30 rounded px-1.5';
+            if (s >= 40) return 'text-manqa-orange bg-manqa-orange/10 border border-manqa-orange/30 rounded px-1.5';
+            return 'text-text-muted bg-surface border border-border rounded px-1.5';
+        },
+
+        isExpiringSoon(item) {
+            if (!item.deadline) return false;
+            try {
+                const dl = new Date(item.deadline);
+                const days = (dl - new Date()) / (1000 * 60 * 60 * 24);
+                return days > 0 && days <= 7;
+            } catch { return false; }
+        },
+
+        dimDots(item) {
+            const dims = item.match_dimensions;
+            if (!dims) return [];
+            const labels = {
+                food_security: 'ALIM', culinary_training: 'COCINA',
+                youth_employment: 'JOVEN', social_enterprise: 'SOCIAL',
+                agriculture: 'AGRO', climate: 'CLIMA', gender_inclusion: 'INCL'
+            };
+            return Object.entries(dims)
+                .filter(([_, v]) => v >= 30)
+                .map(([k, v]) => ({ label: labels[k] || k, color: this.catHex(k) }));
+        }
+    };
+}
+</script>
+
+</div><!-- /main-content -->
+
+<script>
+async function checkAuth(){
+  const input=document.getElementById('auth-input').value;
+  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(input)))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(hash==='b1d15f606934b14400dab3448957b72455909819fa4c7bbf6088b0deb88e11ae'){
+    document.getElementById('auth-gate').style.display='none';
+    document.getElementById('main-content').style.display='block';
+    sessionStorage.setItem('mq-auth','1');
+  }else{
+    document.getElementById('auth-error').style.display='block';
+    document.getElementById('auth-input').value='';
+  }
+}
+if(sessionStorage.getItem('mq-auth')==='1'){
+  document.getElementById('auth-gate').style.display='none';
+  document.getElementById('main-content').style.display='block';
+}
+</script>
+
+</body>
+</html>
