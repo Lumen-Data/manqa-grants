@@ -29,7 +29,9 @@ def set_no_apify(flag):
 
 
 # Only these actors use Apify; everything else falls back to RSS
-_APIFY_ALLOWLIST = set()
+_APIFY_ALLOWLIST = {
+    "apify/google-search-scraper",
+}
 
 
 def _run_actor(actor_id, run_input, timeout_secs=300):
