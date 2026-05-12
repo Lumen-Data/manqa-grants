@@ -158,11 +158,47 @@ def _scrape_js_page(urls, source_name):
 # ---------------------------------------------------------------------------
 
 def _scrape_globalgiving():
-    """GlobalGiving — Bolivia projects & grants."""
-    return _scrape_js_page(
-        "https://www.globalgiving.org/search/?size=25&nextPage=1&sortField=sortorder&country=Bolivia",
-        "GlobalGiving Bolivia",
-    )
+    """GlobalGiving — Bolivia projects via public API."""
+    import requests as _req
+    API_KEY = os.environ.get("GLOBALGIVING_API_KEY", "7e121bcd-f5c4-4ec3-aa70-4bde2231c136")
+    results = []
+
+    # Search for Bolivia food/social projects
+    for query in ["Bolivia food", "Bolivia youth", "Bolivia education", "Bolivia agriculture"]:
+        try:
+            r = _req.get(
+                "https://api.globalgiving.org/api/public/services/search/projects",
+                params={"api_key": API_KEY, "q": query},
+                headers={"Accept": "application/json"},
+                timeout=20,
+            )
+            if r.status_code != 200:
+                continue
+            projects = (r.json()
+                        .get("search", {})
+                        .get("response", {})
+                        .get("projects", {})
+                        .get("project", []))
+            for p in projects:
+                if not p.get("active"):
+                    continue
+                title = p.get("title", "")
+                href = p.get("projectLink", "")
+                summary = p.get("summary", "")[:300]
+                themes = [t.get("name", "") for t in p.get("themes", {}).get("theme", [])]
+                kw = matches_keywords(f"{title} {summary} {' '.join(themes)}")
+                if not kw:
+                    kw = matches_keywords(f"{title} {summary}", MANQA_FOOD_KEYWORDS)
+                if not kw:
+                    kw = themes[:3] or ["grant"]
+                item = _food_opp(title, href, "GlobalGiving", snippet=summary, keywords=kw)
+                if item:
+                    results.append(item)
+        except Exception as e:
+            print(f"    !! GlobalGiving API error: {e}", file=sys.stderr)
+    # Dedup by URL
+    seen = set()
+    return [r for r in results if r["url"] not in seen and not seen.add(r["url"])]
 
 
 def _scrape_wfp_innovation():
