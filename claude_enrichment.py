@@ -23,12 +23,12 @@ BOT = timezone(timedelta(hours=-4))
 # ---------------------------------------------------------------------------
 
 PASS1_MODEL = "claude-haiku-4-5-20251001"
-PASS2_MODEL = "claude-haiku-4-5-20251001"
+PASS2_MODEL = "claude-sonnet-4-5-20250514"
 VALIDATE_MODEL = "claude-haiku-4-5-20251001"
 
-PASS1_THRESHOLD = 30
-PASS1_MAX_ITEMS = 100
-PASS2_MAX_ITEMS = 20
+PASS1_THRESHOLD = 25
+PASS1_MAX_ITEMS = 250
+PASS2_MAX_ITEMS = 40
 VALIDATE_MAX_ITEMS = 50
 VALIDATE_MAX_AGE_HOURS = 48
 VALIDATE_DEADLINE_DAYS = 14

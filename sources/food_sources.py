@@ -470,35 +470,27 @@ def _scrape_food_google():
 # Main entry point
 # ---------------------------------------------------------------------------
 
+# NOTE: Sources returning 403/DNS errors removed 2026-05-12.
+# Covered by Google Search queries instead.
+# Removed: Ashoka(403), Feed the Future(DNS), Draper Richards(DNS),
+#   Hivos(0 results), AVINA(0), Echoing Green(0), Sistema B(0),
+#   Zayed(0), Village Capital(0), Global Alliance Food(0)
 _FOOD_SCRAPERS = [
-    # Existing
+    # Working direct/API scrapers
     ("GlobalGiving Bolivia", _scrape_globalgiving),
     ("WFP Innovation", _scrape_wfp_innovation),
     ("GAIN Nutrition", _scrape_gain),
-    ("Hivos", _scrape_hivos),
     ("Slow Food Foundation", _scrape_slow_food),
-    ("Feed the Future/USAID", _scrape_feed_the_future),
     ("CCRP McKnight", _scrape_ccrp),
-    ("Ashoka Fellowship", _scrape_ashoka),
     ("Skoll Foundation", _scrape_skoll),
-    # LATAM social enterprise
-    ("AVINA Foundation", _scrape_avina),
     ("NESsT", _scrape_nesst),
-    ("Echoing Green", _scrape_echoing_green),
-    ("Sistema B", _scrape_sistema_b),
     ("SEGIB Iberoamericana", _scrape_segib),
-    # Food competitions & foundations
     ("Basque Culinary Prize", _scrape_basque_culinary),
     ("Rockefeller Food", _scrape_rockefeller_food),
-    ("Global Alliance Food", _scrape_global_alliance_food),
     ("FFAR", _scrape_ffar),
-    ("Zayed Prize", _scrape_zayed),
-    # Innovation / fellowships
-    ("Draper Richards Kaplan", _scrape_draper_richards),
     ("Grand Challenges", _scrape_grand_challenges),
     ("GSMA Innovation Fund", _scrape_gsma),
-    ("Village Capital", _scrape_village_capital),
-    # Google Search (expanded)
+    # Google Search — covers all removed sources + more
     ("Food Google Search", _scrape_food_google),
 ]
 

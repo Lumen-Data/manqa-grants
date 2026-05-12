@@ -146,7 +146,31 @@ def compute_relevance(item):
 # ---------------------------------------------------------------------------
 
 JUNK_TITLES = {"skip to main content", "home", "menu", "search", "login",
-               "contact", "about", "inicio", "buscar", "cerrar", ""}
+               "contact", "about", "inicio", "buscar", "cerrar", "",
+               "international affairs", "international law", "data licence",
+               "privacy policy", "terms of use", "cookie policy",
+               "summits of the americas", "trust for the americas"}
+
+# Patterns that indicate junk, not a real opportunity
+_JUNK_PATTERNS = re.compile(
+    r'^[\+\d\s\-\(\)]{7,}$'       # phone numbers
+    r'|^[a-zA-Z0-9_.+-]+@'        # email addresses
+    r'|^https?://'                 # bare URLs as titles
+    r'|^\w{1,3}$'                  # 1-3 char titles
+    r'|^(nav|menu|footer|header|sidebar)\b'  # nav elements
+, re.IGNORECASE)
+
+
+def is_junk(title):
+    """Return True if title is junk (nav elements, phone numbers, etc.)."""
+    t = title.strip()
+    if t.lower() in JUNK_TITLES:
+        return True
+    if len(t) < 15:
+        return True
+    if _JUNK_PATTERNS.search(t):
+        return True
+    return False
 
 
 def _auto_classify(title, snippet, opp_type):

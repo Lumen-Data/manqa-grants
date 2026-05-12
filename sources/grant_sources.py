@@ -579,39 +579,31 @@ def _scrape_fonplata():
 
 
 # All individual scrapers
+# NOTE: Sources returning 404/403/SSL errors removed 2026-05-12.
+# Their orgs are still covered by the ~55 Google Search queries below.
+# Removed: DevelopmentAid(403), Tinker(404), GCF(404), CAF(SSL),
+#   IFAD(404), UNICEF Innovation(403), FAO(404), PAHO(404),
+#   US Embassy(404), EU Grants(503/404), COSUDE(403),
+#   Japan Embassy(403), FONPLATA(404)
 _GRANT_SCRAPERS = [
-    # Aggregators
+    # Aggregators (working)
     ("FundsForNGOs LATAM", _scrape_fundsforngos),
-    ("DevelopmentAid", _scrape_developmentaid),
     ("ReliefWeb", _scrape_reliefweb),
-    # Foundations
+    # Foundations (working)
     ("IAF", _scrape_iaf),
-    ("Tinker Foundation", _scrape_tinker),
     ("McKnight Foundation", _scrape_mcknight),
     ("Ford Foundation", _scrape_ford),
-    ("Green Climate Fund", _scrape_gcf),
-    # Multilateral
-    ("CAF", _scrape_caf),
-    ("IFAD/FIDA", _scrape_ifad),
+    # Multilateral (working)
     ("UNDP Bolivia", _scrape_undp),
     ("OAS/OEA", _scrape_oas),
-    # UN agencies
-    ("UNICEF Innovation Fund", _scrape_unicef_innovation),
-    ("FAO", _scrape_fao),
-    ("PAHO/WHO", _scrape_paho),
-    # Bilateral cooperation
-    ("US Embassy Bolivia", _scrape_us_embassy),
-    ("EU Grants Portal", _scrape_eu_grants),
+    # Bilateral (working)
     ("GIZ Bolivia", _scrape_giz),
-    ("Swiss/COSUDE", _scrape_cosude),
     ("JICA Bolivia", _scrape_jica),
-    ("Japan Embassy Bolivia", _scrape_japan_embassy),
     ("Canada Embassy Bolivia", _scrape_canada_embassy),
-    # New: research & regional
+    # Research & regional (working)
     ("IDRC Canada", _scrape_idrc),
     ("CGIAR", _scrape_cgiar),
-    ("FONPLATA", _scrape_fonplata),
-    # Google Search (bilateral, tech funders, EU programs, Bolivia-local)
+    # Google Search — covers all removed sources + more
     ("Grants Google Search", _scrape_grants_google),
 ]
 

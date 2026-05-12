@@ -5,7 +5,7 @@ import os
 import sys
 from datetime import datetime, date, timezone, timedelta
 
-from scoring import JUNK_TITLES
+from scoring import JUNK_TITLES, is_junk
 
 BOT = timezone(timedelta(hours=-4))
 
@@ -15,7 +15,7 @@ def dedup(results):
     seen = set()
     unique = []
     for r in results:
-        if r["title"].lower().strip() in JUNK_TITLES:
+        if is_junk(r["title"]):
             continue
         if r["url"] not in seen:
             seen.add(r["url"])
