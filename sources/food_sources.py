@@ -19,7 +19,7 @@ if _pkg_dir not in sys.path:
     sys.path.insert(0, _pkg_dir)
 
 from scoring import matches_keywords, MANQA_CONEXION_KEYWORDS, MANQA_FOOD_KEYWORDS, opp
-from sources._helpers import fetch
+from sources._helpers import fetch, fetch_rendered
 from sources.google_search import google_search_apify
 
 
@@ -116,101 +116,117 @@ def _scrape_listing_page(page_url, source_name, link_selector, parent_selector=N
 
 
 # ---------------------------------------------------------------------------
-# Tier 1: Direct scrape sources
+# JS-rendered scraper (Crawl4AI)
+# ---------------------------------------------------------------------------
+
+def _scrape_js_page(urls, source_name):
+    """Scrape JS-rendered pages via Crawl4AI headless browser.
+
+    Falls back to BeautifulSoup if Crawl4AI is unavailable.
+    """
+    if isinstance(urls, str):
+        urls = [urls]
+
+    results = []
+    for url in urls:
+        # Try Crawl4AI first (handles JS rendering)
+        items = fetch_rendered(url)
+        if items:
+            for title, href, snippet in items:
+                kw = matches_keywords(f"{title} {snippet}")
+                if not kw:
+                    kw = matches_keywords(f"{title} {snippet}", MANQA_FOOD_KEYWORDS)
+                if not kw:
+                    kw = matches_keywords(f"{title} {snippet}", MANQA_CONEXION_KEYWORDS)
+                if not kw:
+                    continue  # Skip irrelevant links from rendered page
+                item = _food_opp(title, href, source_name, snippet=snippet, keywords=kw)
+                if item:
+                    results.append(item)
+        else:
+            # Fallback to BeautifulSoup
+            results.extend(_scrape_listing_page(
+                url, source_name,
+                "h2 a, h3 a, .card a, article a, a.btn, li a",
+                parent_selector="article",
+            ))
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Tier 1: Direct scrape sources (JS-rendered via Crawl4AI)
 # ---------------------------------------------------------------------------
 
 def _scrape_globalgiving():
     """GlobalGiving — Bolivia projects & grants."""
-    return _scrape_listing_page(
+    return _scrape_js_page(
         "https://www.globalgiving.org/search/?size=25&nextPage=1&sortField=sortorder&country=Bolivia",
         "GlobalGiving Bolivia",
-        "h3 a, h2 a, .project-title a, .card a, article a",
-        parent_selector="article",
     )
 
 
 def _scrape_wfp_innovation():
     """WFP Innovation Accelerator — food systems."""
-    return _scrape_listing_page(
+    return _scrape_js_page(
         "https://innovation.wfp.org/apply",
         "WFP Innovation",
-        "h2 a, h3 a, .card a, article a, a.btn",
-        parent_selector="article",
     )
 
 
 def _scrape_gain():
     """GAIN — Global Alliance for Improved Nutrition."""
-    return _scrape_listing_page(
+    return _scrape_js_page(
         "https://www.gainhealth.org/opportunities",
         "GAIN Nutrition",
-        "h2 a, h3 a, .card a, article a",
-        parent_selector="article",
     )
 
 
 def _scrape_hivos():
     """Hivos — food systems, sustainable diets."""
-    results = []
-    for url in [
-        "https://hivos.org/programs/food-systems/",
-        "https://hivos.org/tenders-calls/",
-    ]:
-        results.extend(_scrape_listing_page(
-            url, "Hivos",
-            "h2 a, h3 a, .card a, article a",
-            parent_selector="article",
-        ))
-    return results
+    return _scrape_js_page(
+        ["https://hivos.org/programs/food-systems/",
+         "https://hivos.org/tenders-calls/"],
+        "Hivos",
+    )
 
 
 def _scrape_slow_food():
     """Slow Food Foundation — food biodiversity, local food."""
-    return _scrape_listing_page(
+    return _scrape_js_page(
         "https://www.slowfood.com/what-we-do/",
         "Slow Food Foundation",
-        "h2 a, h3 a, .card a, article a",
-        parent_selector="article",
     )
 
 
 def _scrape_feed_the_future():
     """Feed the Future / USAID — food security."""
-    return _scrape_listing_page(
+    return _scrape_js_page(
         "https://www.feedthefuture.gov/opportunities/",
         "Feed the Future/USAID",
-        "h2 a, h3 a, .card a, article a, li a",
-        parent_selector="article",
     )
 
 
 def _scrape_ccrp():
     """CCRP McKnight — Collaborative Crop Research Program."""
-    return _scrape_listing_page(
+    return _scrape_js_page(
         "https://www.ccrp.org/grants/",
         "CCRP McKnight",
-        "h2 a, h3 a, .card a, article a",
-        parent_selector="article",
     )
 
 
 def _scrape_ashoka():
     """Ashoka — social enterprise fellowship."""
-    return _scrape_listing_page(
+    return _scrape_js_page(
         "https://www.ashoka.org/en-us/program/ashoka-fellowship",
         "Ashoka Fellowship",
-        "h2 a, h3 a, .card a, article a",
-        parent_selector="article",
     )
 
 
 def _scrape_skoll():
     """Skoll Foundation — social enterprise awards."""
-    return _scrape_listing_page(
+    return _scrape_js_page(
         "https://skoll.org/about/skoll-awards/",
         "Skoll Foundation",
-        "h2 a, h3 a, .card a, article a",
-        parent_selector="article",
     )
 
 

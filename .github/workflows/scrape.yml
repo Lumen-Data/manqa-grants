@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Install Chromium for Crawl4AI
+        run: python3 -m patchright install chromium
+
       - name: Run scraper
         env:
           APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
