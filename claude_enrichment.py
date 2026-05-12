@@ -155,8 +155,11 @@ Return JSON:
   "category": "food_security|culinary_training|youth_employment|social_enterprise|agriculture|climate|gender_inclusion",
   "summary": "one-line description in Spanish",
   "bolivia_applicable": true or false,
+  "is_funding_opportunity": true or false,
   "quick_reason": "one sentence explaining the score"
 }}
+
+IMPORTANT: Set is_funding_opportunity to TRUE only if this is an actual grant, fellowship, prize, call for proposals, or funding application that an organization can apply to. Set FALSE if it is a news article, blog post, organizational overview, project description, or general information page about funding.
 
 Score generously across ALL organization dimensions:
 - food_security (seguridad alimentaria, nutrición, sistemas alimentarios)
@@ -180,6 +183,7 @@ def quick_score(item, profile):
         "category": result.get("category", item.get("category", "general")),
         "summary": result.get("summary", ""),
         "bolivia_applicable": result.get("bolivia_applicable", True),
+        "is_funding_opportunity": result.get("is_funding_opportunity", True),
         "quick_reason": result.get("quick_reason", ""),
         "enriched": True,
         "enriched_deep": False,
@@ -227,9 +231,13 @@ Return JSON:
   "requirements": ["key requirement 1", "key requirement 2"],
   "bolivia_applicable": true or false,
   "bolivia_reason": "why or why not applicable to Bolivia",
+  "is_funding_opportunity": true or false,
+  "opportunity_type": "grant|fellowship|prize|accelerator|call_for_proposals|other",
   "status": "active|expired|closed|unclear",
   "action_tip": "what to emphasize if applying, or why to skip"
-}}"""
+}}
+
+IMPORTANT: Set is_funding_opportunity to TRUE only if this page is an actual grant, fellowship, prize, call for proposals, or funding application. Set FALSE if it is a news article, blog post, organizational overview, project report, or general information page. Read the page content carefully to determine this."""
 
 
 def deep_enrich(item, profile):
@@ -237,7 +245,7 @@ def deep_enrich(item, profile):
     page_text = _fetch_page_text(item["url"])
     if not page_text:
         return None
-    result = _call_claude(PASS2_MODEL, PASS2_SYSTEM, _pass2_prompt(item, profile, page_text), max_tokens=500)
+    result = _call_claude(PASS2_MODEL, PASS2_SYSTEM, _pass2_prompt(item, profile, page_text), max_tokens=600)
     if not result:
         return None
     return {
@@ -250,6 +258,8 @@ def deep_enrich(item, profile):
         "requirements": result.get("requirements", []),
         "bolivia_applicable": result.get("bolivia_applicable", True),
         "bolivia_reason": result.get("bolivia_reason", ""),
+        "is_funding_opportunity": result.get("is_funding_opportunity", True),
+        "opportunity_type": result.get("opportunity_type", "grant"),
         "status": result.get("status", "active"),
         "action_tip": result.get("action_tip", ""),
         "enriched": True,

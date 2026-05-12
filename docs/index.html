@@ -100,6 +100,25 @@
     </div>
     <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-manqa-orange/40 to-transparent -mt-4"></div>
 
+    <!-- Deadline Urgency Banner -->
+    <template x-if="urgentGrants.length > 0">
+        <div class="bg-manqa-orange/10 border border-manqa-orange/30 rounded-xl p-4 flex items-start gap-3">
+            <span class="material-symbols-outlined text-manqa-orange text-[24px] mt-0.5">warning</span>
+            <div>
+                <p class="text-sm font-semibold text-manqa-orange" x-text="urgentGrants.length + ' oportunidad' + (urgentGrants.length > 1 ? 'es cierran' : ' cierra') + ' esta semana'"></p>
+                <div class="flex flex-col gap-1 mt-2">
+                    <template x-for="item in urgentGrants" :key="item.url">
+                        <a :href="item.url" target="_blank" class="text-sm text-text-primary hover:text-manqa-orange no-underline flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[14px] text-manqa-orange">schedule</span>
+                            <span class="font-medium" x-text="item.deadline"></span>
+                            <span class="text-text-secondary" x-text="'— ' + item.title.substring(0, 60) + (item.title.length > 60 ? '...' : '')"></span>
+                        </a>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <!-- Category Stats -->
     <section class="grid grid-cols-3 md:grid-cols-7 gap-2 sm:gap-3">
         <template x-for="s in statCards" :key="s.cat">
@@ -141,11 +160,22 @@
                     </div>
                     <h3 class="text-[15px] font-semibold text-manqa-navy leading-tight" x-text="item.title"></h3>
                     <p class="text-sm text-text-secondary line-clamp-2" x-text="item.summary || item.snippet"></p>
+                    <!-- Why it fits Manq'a -->
+                    <p x-show="item.match_reason" class="text-xs text-manqa-navy/70 bg-surface rounded-lg px-3 py-2 leading-relaxed" x-text="item.match_reason"></p>
+                    <!-- Requirements -->
+                    <div x-show="item.requirements && item.requirements.length > 0" class="text-xs text-text-secondary">
+                        <span class="font-semibold text-manqa-navy">Requisitos:</span>
+                        <span x-text="(item.requirements || []).slice(0, 3).join(' · ')"></span>
+                    </div>
+                    <!-- Action tip -->
                     <p x-show="item.action_tip" class="text-xs text-manqa-orange/80 italic" x-text="item.action_tip"></p>
+                    <!-- Not a real funding opportunity warning -->
+                    <p x-show="item.is_funding_opportunity === false" class="text-[10px] text-error bg-error/5 rounded px-2 py-1 font-medium">No es convocatoria directa — artículo informativo</p>
                     <div class="flex flex-wrap gap-2 mt-auto pt-2 items-center">
                         <template x-for="dim in dimDots(item)" :key="dim.label">
                             <span class="text-[9px] px-1.5 py-0.5 rounded-full border" :style="'border-color:' + dim.color + ';color:' + dim.color" x-text="dim.label"></span>
                         </template>
+                        <span x-show="item.opportunity_type && item.opportunity_type !== 'grant'" class="text-[9px] px-1.5 py-0.5 rounded-full bg-manqa-purple/10 text-manqa-purple border border-manqa-purple/30 uppercase" x-text="item.opportunity_type"></span>
                         <span x-show="item.deadline" class="text-xs ml-auto flex items-center gap-1" :class="isExpiringSoon(item) ? 'text-manqa-orange font-semibold' : 'text-text-muted'">
                             <span class="material-symbols-outlined text-[14px]">schedule</span>
                             <span x-text="item.deadline"></span>
@@ -385,9 +415,27 @@ function dashboard() {
 
         get topPicks() {
             return this.data
-                .filter(d => (d.match_score || d.relevance) >= 30 && d.status !== 'expired' && d.status !== 'closed')
+                .filter(d => (d.match_score || d.relevance) >= 30
+                    && d.status !== 'expired' && d.status !== 'closed'
+                    && d.bolivia_applicable !== false
+                    && d.is_funding_opportunity !== false)
                 .sort((a, b) => (b.match_score || b.relevance) - (a.match_score || a.relevance))
                 .slice(0, 6);
+        },
+
+        get urgentGrants() {
+            const now = new Date();
+            const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+            return this.data
+                .filter(d => {
+                    if (!d.deadline || d.status === 'expired' || d.status === 'closed') return false;
+                    if (d.bolivia_applicable === false || d.is_funding_opportunity === false) return false;
+                    try {
+                        const dl = new Date(d.deadline);
+                        return dl > now && dl <= weekFromNow;
+                    } catch { return false; }
+                })
+                .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
         },
 
         get sources() {
