@@ -2,3 +2,4 @@ requests
 beautifulsoup4
 anthropic
 crawl4ai
+apify-client

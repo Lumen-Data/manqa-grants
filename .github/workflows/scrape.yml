@@ -45,6 +45,7 @@ jobs:
           SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GLOBALGIVING_API_KEY: ${{ secrets.GLOBALGIVING_API_KEY }}
+          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
         run: python3 scraper.py --save
 
       - name: Commit & push if changed

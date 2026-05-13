@@ -21,6 +21,7 @@ if _pkg_dir not in sys.path:
 from scoring import matches_keywords, MANQA_CONEXION_KEYWORDS, MANQA_FOOD_KEYWORDS, opp
 from sources._helpers import fetch, fetch_rendered
 from sources.google_search import google_search_apify
+from shared.apify import run_actor as _run_actor
 
 
 # ---------------------------------------------------------------------------
@@ -479,15 +480,104 @@ def _scrape_food_google():
     ], "Food Grants (via Google)", opp_type="grant")
 
 
-def _scrape_facebook_grants():
-    """Facebook Bolivia — food/development/NGO groups via Google Search."""
+# ---------------------------------------------------------------------------
+# Facebook Groups — Apify facebook-posts-scraper
+# ---------------------------------------------------------------------------
+
+# Curated groups that post grant/funding/cooperation opportunities
+# relevant to Manq'a's mission (food, youth, social enterprise, Bolivia)
+_FB_GRANT_GROUPS = [
+    # Global/LATAM humanitarian & grant opportunity groups
+    "https://www.facebook.com/groups/1063997463960323",  # Red Global de Oportunidades y Ayudas Humanitarias
+    "https://www.facebook.com/groups/1163972940398907",  # Becas, pasantías, empleos, voluntariado
+    "https://www.facebook.com/groups/897510813691475",   # OPORTUNIDADES BOLIVIA
+]
+
+# Signals that indicate a grant/funding post (not a job post)
+_FB_GRANT_SIGNALS = [
+    "convocatoria", "fondo", "beca", "subvención", "grant", "funding",
+    "financiamiento", "cooperación", "call for proposals", "fondos concursables",
+    "cofinanciamiento", "donación", "fellowship", "premio", "award",
+    "seed fund", "fondo semilla", "apply now", "postula", "inscríbete",
+    "propuesta", "proyecto", "ONG",
+]
+
+# Reject job posts — these are not grants
+_FB_JOB_SIGNALS = [
+    "vacante", "empleo", "hiring", "se busca personal", "sueldo",
+    "salario", "contrato laboral", "horario de trabajo",
+]
+
+
+def _facebook_google_fallback():
+    """Google Search fallback for Facebook grant groups."""
     return google_search_apify([
-        'site:facebook.com/groups Bolivia "convocatoria" OR "fondo" OR "beca" OR "grant"',
-        'site:facebook.com/groups Bolivia "seguridad alimentaria" OR "nutrición" OR "agricultura"',
-        'site:facebook.com/groups Bolivia "ONG" OR "cooperación" OR "desarrollo social"',
-        'site:facebook.com/groups "La Paz" "emprendimiento social" OR "juventud" OR "capacitación"',
-        'site:facebook.com Bolivia "convocatoria fondos" OR "call for proposals" 2026',
-    ], "Facebook Bolivia", opp_type="grant")
+        'site:facebook.com/groups "convocatoria" "fondo" OR "beca" OR "grant" Bolivia OR Latinoamérica',
+        'site:facebook.com/groups "seguridad alimentaria" OR "desarrollo sostenible" "convocatoria" OR "fondo"',
+        'site:facebook.com/groups "cooperación internacional" OR "ayuda humanitaria" "convocatoria"',
+        'site:facebook.com/groups "emprendimiento social" OR "juventud" "fondo" OR "beca" Bolivia',
+    ], "Facebook Grants (via Google)", opp_type="grant")
+
+
+def _scrape_facebook_grants():
+    """Facebook grant groups — Apify facebook-posts-scraper with Google fallback."""
+    items, err = _run_actor("apify/facebook-posts-scraper", {
+        "startUrls": [{"url": u} for u in _FB_GRANT_GROUPS],
+        "resultsLimit": 20,
+    }, timeout_secs=600)
+
+    if not items:
+        print(f"  Facebook grants: {err or 'no results'}, falling back to Google Search...",
+              file=sys.stderr)
+        return _facebook_google_fallback()
+
+    results = []
+    seen = set()
+    for post in items:
+        text = post.get("text") or post.get("message") or ""
+        if not text or len(text) < 30:
+            continue
+
+        text_lower = text.lower()
+
+        # Must contain at least one grant signal
+        if not any(sig in text_lower for sig in _FB_GRANT_SIGNALS):
+            continue
+
+        # Skip pure job posts
+        if any(sig in text_lower for sig in _FB_JOB_SIGNALS):
+            # Unless it also mentions grant-relevant terms
+            if not any(kw in text_lower for kw in [
+                "beca", "fondo", "grant", "convocatoria de fondos",
+                "cooperación", "financiamiento",
+            ]):
+                continue
+
+        url = post.get("url") or post.get("postUrl") or ""
+        if not url or url in seen:
+            continue
+        seen.add(url)
+
+        title = text[:120].split("\n")[0].strip()
+        snippet = text[:300]
+        kw = matches_keywords(f"{title} {snippet}")
+        if not kw:
+            kw = matches_keywords(f"{title} {snippet}", MANQA_FOOD_KEYWORDS)
+        if not kw:
+            kw = matches_keywords(f"{title} {snippet}", MANQA_CONEXION_KEYWORDS)
+        if not kw:
+            kw = ["grant"]
+
+        item = _food_opp(title, url, "Facebook Grants", snippet=snippet, keywords=kw)
+        if item:
+            results.append(item)
+
+    if not results:
+        print(f"  Facebook grants: got {len(items)} items but no grant posts, "
+              f"falling back to Google Search...", file=sys.stderr)
+        return _facebook_google_fallback()
+
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -516,8 +606,8 @@ _FOOD_SCRAPERS = [
     ("GSMA Innovation Fund", _scrape_gsma),
     # Google Search — covers all removed sources + more
     ("Food Google Search", _scrape_food_google),
-    # Facebook Bolivia groups
-    ("Facebook Bolivia", _scrape_facebook_grants),
+    # Facebook grant groups (Apify direct scrape)
+    ("Facebook Grants", _scrape_facebook_grants),
 ]
 
 
